@@ -16,5 +16,4 @@ Puede acceder a la Wiki mediante el siguiente [enlace](https://github.com/inashx
 * [Video presentación cliente](https://aula.usm.cl/mod/resource/view.php?id=6926137)
 
 ## Aspectos técnicos relevantes
-
-_Todo aspecto relevante para poder usar el proyecto o consideraciones del proyecto base a ser entregado_
+> -
