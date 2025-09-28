@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Aplicación Node.js con Docker y PostgreSQL
 
 Este es un ejemplo de una aplicación Node.js usando Express, Docker y PostgreSQL. Incluye configuración para desarrollo y producción.
@@ -52,24 +51,3 @@ Para detener todos los contenedores sin eliminar volúmenes:
 
 
 
-=======
-# Grupo 19
-
-Este es el repositorio del *Grupo 19*, cuyos integrantes son:
-
-* Cristóbal Brandau - 202373552-3
-* Carlos Bravo - 202373531-0
-* Ignacia Nettle - 202373547-7
-* Elismar Suárez - 202304535-7
-* **Tutor**: Felipe Fernández
-## Wiki
-
-Puede acceder a la Wiki mediante el siguiente [enlace](https://github.com/inashxiz/GRUPO19-2025-PROYINF/wiki)
-
-## Videos
-
-* [Video presentación cliente](https://aula.usm.cl/mod/resource/view.php?id=6926137)
-
-## Aspectos técnicos relevantes
-> -
->>>>>>> f9f9c76d141bc0294bc6c15ce951fb70ab280925
