@@ -16,4 +16,5 @@ Puede acceder a la Wiki mediante el siguiente [enlace](https://github.com/inashx
 * [Video presentación cliente](https://aula.usm.cl/mod/resource/view.php?id=6926137)
 
 ## Aspectos técnicos relevantes
-> -
+> - Para poder ejecutar correctamente el proyecto referir a este [README](https://github.com/inashxiz/GRUPO19-2025-PROYINF/blob/main/Proyecto/README.md).
+> - Evidencias de que el proyecto fue ejecutado correctamente pueden encontrarse [aquí](https://github.com/inashxiz/GRUPO19-2025-PROYINF/wiki/Evidencia-de-C%C3%B3digo).
