@@ -1,5 +1,5 @@
 const express = require('express');
-const pool = require('./db'); // Importar la conexión
+const pool = require('../../../DB/db'); // Importar la conexión
 const app = express();
 const port = 3000;
 
