@@ -1,7 +1,9 @@
 const express = require('express');
-const pool = require('../../../DB/db'); // Importar la conexión
+const pool = require('./database/db'); // Importar la conexión
 const app = express();
 const port = 3000;
+
+app.use(express.static('public'));
 
 // Ruta de prueba que guarda un mensaje en la base de datos
 app.get('/save', async (req, res) => {

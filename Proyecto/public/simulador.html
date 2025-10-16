@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="./css/simulador.css">
+    <title>Simulador Crédito de Consumo</title>
+</head>
+<body>
+    <div class="container">
+        <div class="form-title">
+            <h2>Simulador Crédito de Consumo</h2>
+        </div>
+        <div class="progress-container"></div>
+        <div class="form-container">
+            <form action="/" method="POST">
+                <div class="form-group">
+                    <label for="RUT">Ingresa tu RUT:</label><br>
+                    <div class="input">
+                        <i class="fa fa-user" aria-hidden="true"></i>
+                        <input type="text" name="monto" id="", placeholder="Ej: 99.999.999-9" class="RUT-input", maxlength="12">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="monto">Ingresa monto que necesitas:</label><br>
+                    <div class="input">
+                        <i class="fa-solid fa-money-bill-1"></i>
+                        <input type="text" name="monto" id="" placeholder="Ej: 4.500.000" class="monto-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="renta">Ingresa tu renta líquida mensual:</label><br>
+                    <div class="input">
+                        <i class="fa fa-usd" aria-hidden="true"></i>
+                        <input type="text" name="renta" id="" placeholder="Ej: 1.000.000" class="renta-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cuotas">Elige la cantidad de cuotas:</label><br>
+                    <div class="input">
+                        <i class="fa-regular fa-clock"></i>
+                        <input type="text" name="cuotas" id="" value="12" class="cuotas-input">
+                    </div>
+                </div>
+                <button class="form-btn" type="submit">SIMULAR</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
