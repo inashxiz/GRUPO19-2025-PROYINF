@@ -1,0 +1,60 @@
+<body>
+    <main class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">Simulador Crédito de Consumo</h1>
+                <p class="card-description">Completa el formulario para simular tu crédito</p>
+            </div>
+            <div class="card-content">
+                <form id="creditForm" action="/simulation" method="POST">
+                    <div class="form-group">
+                        <label for="rut" class="form-label">
+                            <i class="fa-regular fa-user"></i>
+                            Ingresa tu RUT
+                        </label>
+                        <input type="text" id="rut" name="rut" class="form-input" placeholder="Ej: 12.345.678-9" maxlength="12">
+                        <span class="error-message" id="rut-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="monto" class="form-label">
+                            <i class="fa-solid fa-dollar-sign"></i>
+                            Ingresa el monto que necesitas
+                        </label>
+                        <input type="text" id="monto" name="monto" class="form-input" placeholder="Ej: 4.500.000">
+                        <span class="error-message" id="monto-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="renta" class="form-label">
+                            <i class="fa-solid fa-wallet"></i>
+                            Ingresa tu renta líquida mensual
+                        </label>
+                        <input type="text" id="renta" name="renta" class="form-input" placeholder="Ej: 1.000.000">
+                        <span class="error-message" id="renta-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cuotas" class="form-label">
+                            <i class="fa-solid fa-coins"></i>
+                            Elige la cantidad de cuotas
+                        </label>
+                        <input type="number" id="cuotas" name="cuotas" class="form-input" value="12" min="1" max="60">
+                        <span class="error-message" id="cuotas-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fechaPrimerPago" class="form-label">
+                            <i class="fa-regular fa-calendar"></i>
+                            Fecha del primer pago
+                        </label>
+                        <input type="date" id="fechaPrimerPago" name="fechaPrimerPago" class="form-input">
+                        <span class="error-message" id="fechaPrimerPago-error"></span>
+                    </div>
+
+                    <button type="submit" class="submit-button" id="submitBtn">SIMULAR</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
