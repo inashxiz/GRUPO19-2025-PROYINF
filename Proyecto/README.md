@@ -19,7 +19,7 @@ Ejecutar en terminal:
 2. (les instalará las dependencias se suele demorar un poco la primera vez con esto levantan el proyecto)  
 docker compose up --build
 
-3. Ir a http://localhost:3000/simulator para acceder a la HU:005
+3. Ir a http://localhost:3000/simulator para acceder a la HU:005 Simulación de Préstamo
 
 (para detener los contenedores)  
 docker compose down -v
