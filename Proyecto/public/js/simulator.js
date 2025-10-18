@@ -51,7 +51,7 @@ function clearError(fieldId) {
 
 function validateForm() {
     var isValid = true;
-    ['rut', 'monto', 'renta', 'cuotas', 'fechaPrimerPago'].forEach(clearError);
+    ['rut', 'monto', 'renta', 'cuotas'].forEach(clearError);
     
     const rut = document.getElementById('rut').value;
     if (!rut) {
@@ -67,8 +67,8 @@ function validateForm() {
     if (!monto) {
         showError('monto', 'El monto es requerido');
         isValid = false;
-    } else if (isNaN(montoNumber) || montoNumber <= 0) {
-        showError('monto', 'Ingresa un monto válido');
+    } else if (isNaN(montoNumber) || montoNumber <= 500000) {
+        showError('monto', 'Ingresa un monto válido. El mínimo es 500.000');
         isValid = false;
     }
     
@@ -87,24 +87,9 @@ function validateForm() {
     if (!cuotas) {
         showError('cuotas', 'Las cuotas son requeridas');
         isValid = false;
-    } else if (isNaN(cuotasNumber) || cuotasNumber < 1 || cuotasNumber > 60) {
-        showError('cuotas', 'Ingresa entre 1 y 60 cuotas');
+    } else if (isNaN(cuotasNumber) || cuotasNumber < 6 || cuotasNumber > 60) {
+        showError('cuotas', 'Ingresa entre 6 y 60 cuotas');
         isValid = false;
-    }
-    
-    const fecha = document.getElementById('fechaPrimerPago').value;
-    if (!fecha) {
-        showError('fechaPrimerPago', 'Selecciona la fecha del primer pago');
-        isValid = false;
-    } else {
-        const selectedDate = new Date(fecha);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-            showError('fechaPrimerPago', 'La fecha debe ser hoy o posterior');
-            isValid = false;
-        }
     }
     
     return isValid;
@@ -115,13 +100,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const rutInput = document.getElementById('rut');
     const montoInput = document.getElementById('monto');
     const rentaInput = document.getElementById('renta');
-    const fechaInput = document.getElementById('fechaPrimerPago');
-
-    const today = new Date().toISOString().split('T')[0];
-    fechaInput.setAttribute('min', today);
-    const maxDate = new Date();
-    maxDate.setFullYear(maxDate.getFullYear() + 2);
-    fechaInput.setAttribute('max', maxDate.toISOString().split('T')[0]);
     
     rutInput.addEventListener('input', function(e) {
         const cursorPosition = e.target.selectionStart;
@@ -159,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     document.getElementById('cuotas').addEventListener('input', () => clearError('cuotas'));
-    fechaInput.addEventListener('input', () => clearError('fechaPrimerPago'));
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -168,17 +145,6 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             submitBtn.textContent = 'PROCESANDO...';
             setTimeout(() => {
-                const formData = {
-                    rut: rutInput.value,
-                    monto: montoInput.value,
-                    renta: rentaInput.value,
-                    cuotas: document.getElementById('cuotas').value,
-                    fechaPrimerPago: fechaInput.value
-                };
-                
-                console.log('Form data:', formData);
-                
-                showToast();
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'SIMULAR';
             }, 1500);

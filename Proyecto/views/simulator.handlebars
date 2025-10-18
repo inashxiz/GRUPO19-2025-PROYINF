@@ -39,17 +39,16 @@
                             <i class="fa-solid fa-coins"></i>
                             Elige la cantidad de cuotas
                         </label>
-                        <input type="number" id="cuotas" name="cuotas" class="form-input" value="12" min="1" max="60">
+                        <input type="number" id="cuotas" name="cuotas" class="form-input" value="12" min="6" max="60">
                         <span class="error-message" id="cuotas-error"></span>
                     </div>
 
                     <div class="form-group">
                         <label for="fechaPrimerPago" class="form-label">
                             <i class="fa-regular fa-calendar"></i>
-                            Fecha del primer pago
+                            Fecha del primer pago (mm/dd/yyyy)
                         </label>
-                        <input type="date" id="fechaPrimerPago" name="fechaPrimerPago" class="form-input">
-                        <span class="error-message" id="fechaPrimerPago-error"></span>
+                        <input type="date" id="fechaPrimerPago" name="fechaPrimerPago" class="form-input" readonly><script>document.getElementById('fechaPrimerPago').value = new Date().toISOString().substring(0, 10);</script>
                     </div>
 
                     <button type="submit" class="submit-button" id="submitBtn">SIMULAR</button>

@@ -1,5 +1,144 @@
-<h1>{{title}}</h1>
-<p>RUT: {{rut}}</p>
-<p>Monto: {{monto}}</p>
-<p>Renta: {{renta}}</p>
-<p>Fecha del Primer Pago: {{fechaPrimerPago}}</p>
+<div class="page-container">
+    <div class="content-wrapper">
+        <div class="results-section">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="card-title">Este es el resultado de tu simulación</h1>
+                </div>
+                <div class="card-content">
+                    <div class="important-results">
+                        <div class="important-group">
+                            <p class="important-title">Monto a Solicitar</p>
+                            <h2 class="important-result" id="monto">{{monto}}</h2>
+                        </div>
+                        
+                        <div class="important-group">
+                            <p class="important-title">Cuota Mensual</p>
+                            <h2 class="important-result" id="cuotaMensual">{{cuotaMensual}}</h2>
+                        </div>
+
+                        <div class="important-group">
+                            <p class="important-title">tasa de Interés</p>
+                            <h2 class="important-result" id="tasaInteres">{{tasaInteres}}</h2>
+                        </div>
+
+                        <div class="important-group">
+                            <p class="important-title">Costo Total del Crédito (CTC)</p>
+                            <h2 class="important-result" id="ctc">{{ctc}}</h2>
+                        </div>
+                    </div>
+
+                    <div class="other-results">
+                        <div class="other-group">
+                            <p class="other-title">Número de Cuotas</p>
+                            <p class="other-result" id="cuotas">{{cuotas}}</p>
+                        </div>
+
+                        <div class="other-group">
+                            <p class="other-title">Fecha de Primer Pago</p>
+                            <p class="other-result" id="fechaPrimerPago">{{fechaPrimerPago}}</p>
+                        </div>
+
+                        <div class="other-group">
+                            <p class="other-title">Cargo Anual Equivalente (CAE)</p>
+                            <p class="other-result" id="cae">{{cae}}</p>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <form action="/history/save" method="POST">
+                            <input type="text" name="rut" value="{{rut}}" hidden>
+                            <input type="text" name="renta" value="{{renta}}" hidden>
+                            <input type="text" name="monto" value="{{monto}}" hidden>
+                            <input type="text" name="cuotas" value="{{cuotas}}" hidden>
+                            <input type="date" name="fechaPrimerPago" value="{{fechaPrimerPago}}" hidden>
+                            <button class="btn btn-outline" id="saveSimBtn" type="submit">
+                                <i class="fas fa-save"></i>
+                                Guardar Simulación
+                            </button>
+                        </form>
+
+                        <button class="btn btn-outline" id="viewSimBtn">
+                            <i class="fas fa-file-alt"></i>
+                            Ver Historial
+                        </button>
+                        
+                        <form action="/history" method="POST">
+                            <button class="btn btn-primary" id="requestLoanBtn" type="submit">
+                                <i class="fas fa-credit-card"></i>
+                                Solicitar Crédito
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history-panel" id="historyPanel" hidden>
+                <h3>
+                    <i class="fa-regular fa-clock"></i>
+                    Historial (máx. 5)
+                </h3>
+                {{#if simulations.length}}
+                    <ul class="history-list">
+                    {{#each simulations}}
+                        <li class="history-item">
+                            <div class="history-item-content">
+                                <div>
+                                    <strong>${{this.monto}}</strong> en {{this.cuotas}} cuotas <br>
+                                    <small> · CAE {{this.cae}}% · Cuota ${{this.cuotaMensual}}</small>
+                                </div>
+
+                                <form action="/history/load" class="inline-form" method="POST" >
+                                    <input type="hidden" name="id" value="{{this.id}}">
+                                    <button type="submit" class="history-load-btn">Cargar</button>
+                                </form>
+                            </div>
+                        </li>
+                    {{/each}}
+                    </ul>
+                {{else}}
+                    <p>No hay simulaciones guardadas.</p>
+                {{/if}}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <div class="card card-sticky">
+                <div class="card-header">
+                    <h2 class="card-title card-title-small">
+                        <i class="fas fa-calculator"></i>
+                        Ajustar Simulación
+                    </h2>
+                </div>
+                <div class="card-content">
+                    <form action="/recalculate" id="adjustForm" method="POST">
+                        <div class="form-group">
+                            <label for="adjustAmount" class="form-label">
+                                <i class="fas fa-dollar-sign"></i>
+                                Monto a Solicitar
+                            </label>
+                            <input type="text" name="monto" id="adjustAmount" class="form-input", placeholder="Ingrese un monto">
+                            <span class="error-message" id="adjustAmount-error"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adjustQuotas" class="form-label">
+                                <i class="fas fa-calendar-alt"></i>
+                                Número de Cuotas
+                            </label>
+                            <input type="number" name="cuotas" id="adjustQuotas" class="form-input" placeholder="Ingrese un número de cuotas" min="6" max="60">
+                            <span class="error-message" id="adjustQuotas-error"></span>
+                        </div>
+                        <input type="text" name="rut" value="{{rut}}" hidden>
+                        <input type="text" name="renta" value="{{renta}}" hidden>
+                        <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+                            <i class="fas fa-calculator"></i>
+                            Calcular Nuevamente
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="toastContainer" class="toast-container"></div>
