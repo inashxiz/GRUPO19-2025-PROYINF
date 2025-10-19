@@ -242,11 +242,11 @@ app.listen(port, () => {
 
 /* 
 -------TO DO LIST-------
-- [] boton de "solicitar crédito" aka hacer la solicitud podría borrar el historial guardado en la bdd por el cliente -> historial temporal
+- [x] boton de "solicitar crédito" aka hacer la solicitud podría borrar el historial guardado en la bdd por el cliente -> historial temporal
 - [x] hacer bien cálculos de la simulación (sin costos adicionales, son todos cálculos puros)
 - [x] css + js de sim-results
 - [x] ajustar monto y/o cuotas y recalcular inmediatamente
-- [] guardar solicitudes (temporalemnte) límite de 5 slots para guardar simulaciones, si se quiere agregar más se tienen que sobreescribir guardadas
-- [] poder cargar previas solicitudes para hacer la solicitud
+- [x] guardar solicitudes (temporalemnte) límite de 5 slots para guardar simulaciones, si se quiere agregar más se tienen que sobreescribir guardadas
+- [x] poder cargar previas solicitudes para hacer la solicitud
 - [] migraciones de la bdd ?
 */
