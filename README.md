@@ -14,6 +14,7 @@ Puede acceder a la Wiki mediante el siguiente [enlace](https://github.com/inashx
 ## Videos
 
 * [Video presentación cliente](https://aula.usm.cl/mod/resource/view.php?id=6926137)
+* [Video prototipo](https://youtu.be/niqSJ-LsC0o)
 
 ## Aspectos técnicos relevantes
 > - Para poder levantar correctamente el proyecto base referir a este [README](https://github.com/inashxiz/GRUPO19-2025-PROYINF/blob/main/Proyecto/README.md).
