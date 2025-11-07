@@ -250,3 +250,83 @@ app.listen(port, () => {
 - [x] poder cargar previas solicitudes para hacer la solicitud
 - [] migraciones de la bdd ?
 */
+
+//Historia de Usuario Simulación
+
+function requireAuth(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+app.get('/login', (req, res) => {
+  if (req.session.user) return res.redirect('/solicitud');
+  res.render('login', {style: 'simulator.css', js: 'login.js', title: 'Iniciar Sesión'});
+});
+
+
+app.post('/login', async (req, res) => {
+  try {
+    const {rut, password} = req.body;
+    const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rut]);
+    if (result.rows.length === 0) {
+      return res.status(401).json({ok: false, error: 'Usuario no encontrado'});
+    }
+    const user = result.rows[0];
+    if (user.password !== password) {
+      return res.status(401).json({ok: false, error: 'Contraseña incorrecta'});
+    }
+    req.session.user = { id: user.id, rut: user.rut, nombre: user.nombre };
+    res.json({ ok: true, user: req.session.user });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+
+
+app.post('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login');
+});
+
+app.get('/solicitud', requireAuth, (req, res) => {
+  res.render('solicitud', { 
+    style: 'simulator.css', 
+    js: 'solicitud.js',
+    title: 'Solicitar Préstamo',
+    user: req.session.user 
+  });
+});
+
+
+app.post('/solicitud', requireAuth, async (req, res) => {
+  try {
+    const {
+      monto, cuotas, renta, 
+      fechaPrimerPago,
+      tasaInteres,
+      cuotaMensual, ctc, cae
+    } = req.body;
+    const userId = req.session.user.id;
+    const rut = req.session.user.rut;
+    const result = await pool.query(
+      'INSERT INTO prestamo (user_id, rut, monto, cuotas, renta, fecha_primer_pago, tasa_interes, cuota_mensual, ctc, cae) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [ userId, 
+        rut, 
+        monto, 
+        cuotas, 
+        renta, 
+        fechaPrimerPago, 
+        tasaInteres, 
+        cuotaMensual, 
+        ctc, 
+        cae
+      ]
+    );
+    res.json({ ok: true, prestamo: result.rows[0]});
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message });
+  }
+});
+

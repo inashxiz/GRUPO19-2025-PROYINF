@@ -67,8 +67,11 @@ function validateForm() {
     if (!monto) {
         showError('monto', 'El monto es requerido');
         isValid = false;
-    } else if (isNaN(montoNumber) || montoNumber <= 500000) {
+    } else if (isNaN(montoNumber) || montoNumber < 500000) {
         showError('monto', 'Ingresa un monto válido. El mínimo es 500.000');
+        isValid = false;
+    } else if (isNaN(montoNumber) || montoNumber > 20000000) {
+        showError('monto', 'Ingresa un monto válido. El máximo es 20.000.000');
         isValid = false;
     }
     
