@@ -262,7 +262,7 @@ function requireAuth(req, res, next) {
 
 app.get('/login', (req, res) => {
   if (req.session.user) return res.redirect('/solicitud');
-  res.render('login', {style: 'simulator.css', js: 'login.js', title: 'Iniciar Sesión'});
+  res.render('login', {style: 'login.css', js: 'login.js', title: 'Iniciar Sesión'});
 });
 
 
@@ -292,7 +292,7 @@ app.post('/logout', (req, res) => {
 
 app.get('/solicitud', requireAuth, (req, res) => {
   res.render('solicitud', { 
-    style: 'simulator.css', 
+    style: 'solicitud.css', 
     js: 'solicitud.js',
     title: 'Solicitar Préstamo',
     user: req.session.user 
