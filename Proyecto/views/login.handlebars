@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Iniciar Sesión</h1>
+        </div>
+
+        <form class="login-form" action="/login" method="POST">
+            <div class="form-group">
+                <label for="rut" class="form-label">
+                    <i class="fa-solid fa-id-card"></i> RUT
+                </label>
+                <input type="text" id="rut" name="rut" class="form-input" placeholder="Ej: 12345678-9" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">
+                    <i class="fa-solid fa-lock"></i> Contraseña
+                </label>
+                <input id="password" name="password" class="form-input" placeholder="********" required>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+            </button>
+        </form>
+        {{#if error}}
+        <div class="error-message">
+            <p>{{error}}</p>
+        </div>
+        {{/if}}
+
+        <div class="reg-link">
+            <p>¿No tienes cuenta? <a href="/register">Crear una</a></p>
+        </div>
+    </div>
+</body>
+<script src="public/js/login.js"></script>
+</html>

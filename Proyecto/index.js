@@ -255,32 +255,54 @@ app.listen(port, () => {
 
 function requireAuth(req, res, next) {
   if (!req.session.user) {
-    return res.redirect('/login');
   }
   next();
 }
 
 app.get('/login', (req, res) => {
   if (req.session.user) return res.redirect('/solicitud');
-  res.render('login', {style: 'login.css', js: 'login.js', title: 'Iniciar Sesión'});
+  res.render('login', {
+    style: 'simulator.css',
+    js: 'login.js',
+    title: 'Iniciar Sesión'
+  });
 });
 
 
 app.post('/login', async (req, res) => {
   try {
-    const {rut, password} = req.body;
+    const { rut, password } = req.body;
     const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rut]);
+
     if (result.rows.length === 0) {
-      return res.status(401).json({ok: false, error: 'Usuario no encontrado'});
+      return res.render('login', {
+        style: 'simulator.css',
+        js: 'login.js',
+        title: 'Iniciar Sesión',
+        error: 'Usuario no encontrado'
+      });
     }
+
     const user = result.rows[0];
     if (user.password !== password) {
-      return res.status(401).json({ok: false, error: 'Contraseña incorrecta'});
+      return res.render('login', {
+        style: 'simulator.css',
+        js: 'login.js',
+        title: 'Iniciar Sesión',
+        error: 'Contraseña incorrecta'
+      });
     }
+
     req.session.user = { id: user.id, rut: user.rut, nombre: user.nombre };
-    res.json({ ok: true, user: req.session.user });
+    res.redirect('/solicitud');
+
   } catch (e) {
-    res.status(500).json({ ok: false, error: e.message });
+    res.render('login', {
+      style: 'simulator.css',
+      js: 'login.js',
+      title: 'Iniciar Sesión',
+      error: 'Error del servidor'
+    });
   }
 });
 

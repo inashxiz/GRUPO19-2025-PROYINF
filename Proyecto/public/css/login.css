@@ -1,0 +1,123 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #5f9ea0 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2d3748;
+}
+
+.login-container {
+    background: #ffffff;
+    border-radius: 1rem;
+    box-shadow: 0 8px 32px -8px rgba(45, 55, 72, 0.15);
+    overflow: hidden;
+    max-width: 420px;
+    width: 100%;
+    padding: 2.5rem;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #5f9ea0;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+
+.form-label {
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    
+}
+
+.form-input {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #cbd5e0;
+    font-size: 1rem;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #5f9ea0;
+    box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.1);
+}
+
+.form-input.error {
+    border-color: #e53e3e;
+}
+
+.error-message {
+    color: #e53e3e;
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+.btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: 3rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #5f9ea0 0%, #48d5cf 100%);
+    color: #fff;
+}
+.btn-submit:hover {
+    background: linear-gradient(135deg, #25d6cd 40%, #9afcff 80%);
+}
+
+
+.btn-submit-outline {
+    border: 2px solid #5f9ea0;
+    background: #fff;
+    color: #5f9ea0;
+}
+
+.btn-submit-outline:hover {
+    background: #f0f9f9;
+    color: #ff0000;
+
+}
+.reg-link {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.reg-link a {
+    color: #5f9ea0;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.reg-link a:hover {
+    color: #48d5cf;
+}
+
+.error-messags {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 600;
+}

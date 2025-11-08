@@ -27,7 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_prestamos_user_id ON prestamos(user_id);
 CREATE INDEX IF NOT EXISTS idx_prestamos_rut ON prestamos(rut);
 CREATE INDEX IF NOT EXISTS idx_users_rut ON users(rut);
 
--- Usuario de prueba
+--user de prueba
 INSERT INTO users (rut, password, nombre, email) 
 VALUES ('12345678-9', '12345', 'usuario_test', 'test@usm.cl')
 ON CONFLICT (rut) DO NOTHING;
