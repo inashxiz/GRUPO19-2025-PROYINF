@@ -370,7 +370,7 @@ app.get('/solicitud', requireAuth, (req, res) => {
     style: 'solicitud.css', 
     js: 'solicitud.js',
     title: 'Solicitar Préstamo',
-    user: req.session.user,
+    user: req.session.user|| null,
     rut: sim.rut,
     monto: sim.monto,
     cuotas: sim.cuotas,

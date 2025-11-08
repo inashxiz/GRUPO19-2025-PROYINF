@@ -4,15 +4,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="greeting" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>Hola: {{#if user}}{{user.nombre}}{{else}}INVITADO{{/if}}</span>
-                    
-                        {{#if user}}
-                        <form action="/logout" method="GET" style="margin: 0;">
-                            <button class="btn btn-outline" type="submit">
-                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                            </button>
-                        </form>
-                        {{/if}}
+                        
                     </div>
                     <h1 class="card-title">Este es el resultado de tu simulación</h1>
                 </div>
