@@ -62,7 +62,6 @@ function clearError(fieldId) {
 function validateForm() {
     var isValid = true;
     ['adjustAmount', 'adjustQuotas'].forEach(clearError);
-    
     const amount = document.getElementById('adjustAmount').value;
     const amountNumber = parseFloat(amount.replace(/\./g, ''));
     if (!amount) {
@@ -87,29 +86,30 @@ function validateForm() {
 }
 
 async function proceedWithLoan() {
-    // Recoger los datos de la simulación actual de la página
+    const rutInput = document.getElementById('solicitudRut');
+    const rentaInput = document.getElementById('solicitudRenta');
+    
     const simulationData = {
-        rut: document.querySelector('[data-rut]')?.textContent.trim() || '',
-        renta: document.querySelector('[data-renta]')?.textContent.trim() || '',
+        rut: rutInput ? rutInput.value : '',
+        renta: rentaInput ? rentaInput.value : '',
         monto: document.getElementById('monto')?.textContent.trim().replace(/\./g, '').replace('$', '') || '',
         cuotas: document.getElementById('cuotas')?.textContent.trim() || '',
-        fechaPrimerPago: document.querySelector('[data-fecha]')?.textContent.trim() || '',
-        tasaInteres: document.getElementById('tasaInteres')?.textContent.trim().replace('%', '') || '',
+        fechaPrimerPago: document.getElementById('fechaPrimerPago')?.textContent.trim() || '',
+        tasaInteres: document.getElementById('tasaInteres')?.textContent.trim().replace('%', '').replace(',', '.') || '',
         cuotaMensual: document.getElementById('cuotaMensual')?.textContent.trim().replace(/\./g, '').replace('$', '') || '',
         ctc: document.getElementById('ctc')?.textContent.trim().replace(/\./g, '').replace('$', '') || '',
-        cae: document.getElementById('cae')?.textContent.trim().replace('%', '') || ''
+        cae: document.getElementById('cae')?.textContent.trim().replace('%', '').replace(',', '.') || ''
     };
 
+    console.log('Datos de simulación enviados:', simulationData);
+
     try {
-        // Enviar datos a /solicitud/prepare
         const res = await fetch('/solicitud/prepare', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(simulationData)
         });
-
         const result = await res.json();
-
         if (result.ok) {
             showToast('Redirigiendo a solicitud...', 'success');
             setTimeout(() => {
@@ -120,7 +120,6 @@ async function proceedWithLoan() {
         }
     } catch (error) {
         console.error('Error:', error);
-        // Si falla (probablemente no está logueado), redirigir a login
         showToast('Debe iniciar sesión primero', 'info');
         setTimeout(() => {
             window.location.href = '/login';

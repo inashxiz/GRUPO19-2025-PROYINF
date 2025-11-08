@@ -1,0 +1,73 @@
+<div class="solicitud-container">
+    <div class="user-header">
+        <form action="/logout" method="POST" style="display: inline;">
+            <button type="submit" class="logout-btn">Cerrar Sesión</button>
+        </form>
+    </div>
+
+    <h1 class="card-title"> Solicitud de Préstamo</h1>
+        <div class="info-box">
+            <p>Revise los datos de su simulación antes de confirmar la solicitud.</p>
+        </div>
+        <form id="solicitud-form">
+            <input type="hidden" name="rut" value="{{rut}}">
+            <input type="hidden" name="monto" value="{{monto}}">
+            <input type="hidden" name="cuotas" value="{{cuotas}}">
+            <input type="hidden" name="renta" value="{{renta}}">
+            <input type="hidden" name="fechaPrimerPago" value="{{fechaPrimerPago}}">
+            <input type="hidden" name="tasaInteres" value="{{tasaInteres}}">
+            <input type="hidden" name="cuotaMensual" value="{{cuotaMensual}}">
+            <input type="hidden" name="ctc" value="{{ctc}}">
+            <input type="hidden" name="cae" value="{{cae}}">
+            <div class="resultado-box">
+                <h1 class="card-resumen"> Resumen de la Simulación</h1>
+            <div class="resultado-grid">
+                <div class="resultado-item">
+                    <span class="label">RUT:</span>
+                    <span class="value">{{rut}}</span>
+                </div>
+                <div class="resultado-item">
+                    <span class="label">Monto solicitado:</span>
+                    <span class="value" id="displayMonto">${{monto}}</span>
+                </div>
+                <div class="resultado-item">
+                    <span class="label">Número de cuotas:</span>
+                    <span class="value">{{cuotas}}</span>
+                </div>
+                <div class="resultado-item">
+                    <span class="label">Tasa de interés mensual:</span>
+                    <span class="value">{{tasaInteres}}%</span>
+                </div>
+                <div class="resultado-item">
+                    <span class="label">Cuota mensual:</span>
+                    <span class="value" id="displayCuota">${{cuotaMensual}}</span>
+                </div>
+                <div class="resultado-item">
+                    <span class="label">Costo total del crédito:</span>
+                    <span class="value" id="displayCtc">${{ctc}}</span>
+                </div>
+                <div class="resultado-item">
+                    <span class="label">CAE:</span>
+                    <span class="value">{{cae}}%</span>
+                </div>
+                {{#if fechaPrimerPago}}
+                <div class="resultado-item">
+                    <span class="label">Fecha primer pago:</span>
+                    <span class="value">{{fechaPrimerPago}}</span>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+        <div class="button-confirmar">
+            <button type="submit" class="btn-primary">
+                Confirmar Solicitud
+            </button></div>
+        <div class="button-volver">
+            <button type="button" onclick="window.location.href='/simulator'" class="btn-secondary">
+                Volver al Simulador
+            </button>
+        </div>
+    </form>
+
+    <div id="message" class="message"></div>
+</div>

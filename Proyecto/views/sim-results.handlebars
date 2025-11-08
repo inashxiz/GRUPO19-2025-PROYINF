@@ -45,6 +45,9 @@
                         </div>
                     </div>
 
+                    <input type="hidden" id="solicitudRut" value="{{rut}}">
+                    <input type="hidden" id="solicitudRenta" value="{{renta}}">
+
                     <div class="action-buttons">
                         <form action="/history/save" method="POST">
                             <input type="text" name="rut" value="{{rut}}" hidden>
@@ -63,10 +66,12 @@
                             Ver Historial
                         </button>
                         
-                        <button class="btn btn-primary" id="requestLoanBtn" type="button">
-                            <i class="fas fa-credit-card"></i>
-                            Solicitar Crédito
-                        </button>
+                        <form action="/login" method="GET">
+                            <button class="btn btn-primary" id="requestLoanBtn" type="submit">
+                                <i class="fas fa-credit-card"></i>
+                                Solicitar Crédito
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
