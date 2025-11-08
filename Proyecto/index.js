@@ -291,14 +291,33 @@ app.post('/logout', (req, res) => {
 });
 
 app.get('/solicitud', requireAuth, (req, res) => {
+  if (!req.session.lastSimulation) {
+    return res.redirect('/simulator');
+  }
+  const sim = req.session.lastSimulation;
   res.render('solicitud', { 
     style: 'solicitud.css', 
     js: 'solicitud.js',
     title: 'Solicitar Préstamo',
-    user: req.session.user 
+    user: req.session.user,
+    rut: sim.rut,
+    monto: sim.monto,
+    cuotas: sim.cuotas,
+    renta: sim.renta,
+    fechaPrimerPago: sim.fechaPrimerPago,
+    tasaInteres: sim.tasaInteres,
+    cuotaMensual: sim.cuotaMensual,
+    ctc: sim.ctc,
+    cae: sim.cae
   });
 });
 
+
+app.post('/solicitud/prepare', requireAuth, (req, res) => {
+  // Guardar la simulación seleccionada para solicitar
+  req.session.lastSimulation = req.body;
+  res.json({ ok: true });
+});
 
 app.post('/solicitud', requireAuth, async (req, res) => {
   try {
@@ -306,22 +325,24 @@ app.post('/solicitud', requireAuth, async (req, res) => {
       monto, cuotas, renta, 
       fechaPrimerPago,
       tasaInteres,
-      cuotaMensual, ctc, cae
+      cuotaMensual, 
+      ctc, 
+      cae
     } = req.body;
     const userId = req.session.user.id;
     const rut = req.session.user.rut;
     const result = await pool.query(
-      'INSERT INTO prestamo (user_id, rut, monto, cuotas, renta, fecha_primer_pago, tasa_interes, cuota_mensual, ctc, cae) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [ userId, 
-        rut, 
-        monto, 
-        cuotas, 
-        renta, 
-        fechaPrimerPago, 
-        tasaInteres, 
-        cuotaMensual, 
-        ctc, 
-        cae
+      'INSERT INTO prestamos (user_id, rut, monto, cuotas, renta, fecha_primer_pago, tasa_interes, cuota_mensual, ctc, cae) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+      [ userId,          
+        rut,              
+        monto,          
+        cuotas,          
+        renta,            
+        fechaPrimerPago,  
+        tasaInteres,     
+        cuotaMensual,    
+        ctc,           
+        cae               
       ]
     );
     res.json({ ok: true, prestamo: result.rows[0]});

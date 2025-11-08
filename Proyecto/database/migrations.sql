@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS prestamos (
   cuotas INTEGER NOT NULL,
   renta BIGINT,
   fecha_primer_pago DATE,
-  estado VARCHAR(20) DEFAULT 'evaluación',
+  estado VARCHAR(20) DEFAULT 'EN EVALUACIÓN',
   tasa_interes DECIMAL(5,4),
   cuota_mensual BIGINT,
   ctc BIGINT,
