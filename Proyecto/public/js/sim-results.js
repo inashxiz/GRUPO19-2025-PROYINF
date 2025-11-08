@@ -86,12 +86,46 @@ function validateForm() {
     return isValid;
 }
 
-function proceedWithLoan() {
-    showToast('Procediendo con la solicitud del crédito...', 'success');
-    setTimeout(() => {
-        console.log('Redirecting to loan application with data:', simulationData);
-        // window.location.href = '/loan-application';
-    }, 1500);
+async function proceedWithLoan() {
+    // Recoger los datos de la simulación actual de la página
+    const simulationData = {
+        rut: document.querySelector('[data-rut]')?.textContent.trim() || '',
+        renta: document.querySelector('[data-renta]')?.textContent.trim() || '',
+        monto: document.getElementById('monto')?.textContent.trim().replace(/\./g, '').replace('$', '') || '',
+        cuotas: document.getElementById('cuotas')?.textContent.trim() || '',
+        fechaPrimerPago: document.querySelector('[data-fecha]')?.textContent.trim() || '',
+        tasaInteres: document.getElementById('tasaInteres')?.textContent.trim().replace('%', '') || '',
+        cuotaMensual: document.getElementById('cuotaMensual')?.textContent.trim().replace(/\./g, '').replace('$', '') || '',
+        ctc: document.getElementById('ctc')?.textContent.trim().replace(/\./g, '').replace('$', '') || '',
+        cae: document.getElementById('cae')?.textContent.trim().replace('%', '') || ''
+    };
+
+    try {
+        // Enviar datos a /solicitud/prepare
+        const res = await fetch('/solicitud/prepare', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(simulationData)
+        });
+
+        const result = await res.json();
+
+        if (result.ok) {
+            showToast('Redirigiendo a solicitud...', 'success');
+            setTimeout(() => {
+                window.location.href = '/solicitud';
+            }, 500);
+        } else {
+            showToast('Error al preparar solicitud', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        // Si falla (probablemente no está logueado), redirigir a login
+        showToast('Debe iniciar sesión primero', 'info');
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 1000);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -100,6 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const quotasInput = document.getElementById('adjustQuotas');
     const viewBtn = document.getElementById('viewSimBtn');
     const panel = document.getElementById('historyPanel');
+    const requestLoanBtn = document.getElementById('requestLoanBtn');
     
     var monto = document.getElementById('monto').textContent.trim();
     var cuotaMensual = document.getElementById('cuotaMensual').textContent.trim();
@@ -114,6 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     viewBtn?.addEventListener('click', async () => {
         panel.hidden = !panel.hidden;
+    });
+
+    requestLoanBtn?.addEventListener('click', async () => {
+        await proceedWithLoan();
     });
 
     amountInput.addEventListener('input', function(e) {

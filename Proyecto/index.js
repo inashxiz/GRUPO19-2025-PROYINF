@@ -260,7 +260,7 @@ function requireAuth(req, res, next) {
 }
 
 app.get('/login', (req, res) => {
-  if (req.session.user) return res.redirect('/solicitud');
+  if (req.session.user) return res.redirect('/simulator');
   res.render('login', {
     style: 'simulator.css',
     js: 'login.js',
@@ -294,7 +294,7 @@ app.post('/login', async (req, res) => {
     }
 
     req.session.user = { id: user.id, rut: user.rut, nombre: user.nombre };
-    res.redirect('/solicitud');
+    res.redirect('/simulator');
 
   } catch (e) {
     res.render('login', {
