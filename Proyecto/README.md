@@ -19,7 +19,11 @@ Ejecutar en terminal:
 2. (les instalará las dependencias se suele demorar un poco la primera vez con esto levantan el proyecto)  
 docker compose up --build
 
-3. Ir a http://localhost:3000/simulator para acceder a la HU:005 Simulación de Préstamo
+3. Crear las tablas con "Get-Content database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
+
+4. Ir a http://localhost:3000/simulator para acceder a la HU:005 Simulación de Préstamo
+
+5. Ir a http://localhost:3000/solicitud para acceder a la HU:002 Solicitud de Préstamo
 
 (para detener los contenedores)  
 docker compose down -v

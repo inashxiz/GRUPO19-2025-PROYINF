@@ -1,3 +1,8 @@
+function formatNumber(value) {
+    const numbers = String(value).replace(/\D/g, '');
+    return numbers.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
 function showMessage(type, content) {
     const messageDiv = document.getElementById('message');
     messageDiv.className = `message ${type}`;
@@ -63,6 +68,26 @@ function enableSubmitButton(button) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Formatear números con puntos
+    const displayMonto = document.getElementById('displayMonto');
+    const displayCuota = document.getElementById('displayCuota');
+    const displayCtc = document.getElementById('displayCtc');
+    
+    if (displayMonto) {
+        const monto = displayMonto.textContent.replace('$', '').trim();
+        displayMonto.textContent = '$' + formatNumber(monto);
+    }
+    
+    if (displayCuota) {
+        const cuota = displayCuota.textContent.replace('$', '').trim();
+        displayCuota.textContent = '$' + formatNumber(cuota);
+    }
+    
+    if (displayCtc) {
+        const ctc = displayCtc.textContent.replace('$', '').trim();
+        displayCtc.textContent = '$' + formatNumber(ctc);
+    }
+
     const form = document.getElementById('solicitud-form');
     
     if (!form) {
@@ -71,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const submitBtn = form.querySelector('button[type="submit"]');
-
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         clearMessage();
@@ -79,9 +103,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (submitBtn) {
             disableSubmitButton(submitBtn);
         }
-
         const data = getFormData(form);
-
+        console.log('Datos del formulario enviados:', data);
         try {
             const result = await submitSolicitud(data);
 

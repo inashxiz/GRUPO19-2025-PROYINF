@@ -385,12 +385,15 @@ app.get('/solicitud', requireAuth, (req, res) => {
 
 
 app.post('/solicitud/prepare', requireAuth, (req, res) => {
+  console.log('Datos recibidos en /solicitud/prepare:', req.body);
   req.session.lastSimulation = req.body;
   res.json({ ok: true });
 });
 
 app.post('/solicitud', requireAuth, async (req, res) => {
   try {
+    console.log('Datos recibidos en POST /solicitud:', req.body);
+    console.log('Usuario en sesión:', req.session.user);
     const {
       monto, cuotas, renta, 
       fechaPrimerPago,
