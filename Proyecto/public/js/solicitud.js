@@ -45,11 +45,11 @@ function handleSuccess(prestamo) {
 }
 
 function handleError(errorMessage) {
-    showMessage('error', `❌ Error: ${errorMessage}`);
+    showMessage('error', 'Error: ${errorMessage}');
 }
 
 function handleConnectionError() {
-    showMessage('error', '❌ Error de conexión con el servidor');
+    showMessage('error', 'Error de conexión con el servidor');
 }
 
 function disableSubmitButton(button) {

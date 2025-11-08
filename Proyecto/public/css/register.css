@@ -28,13 +28,11 @@ body {
     text-align: center;
     font-size: 2rem;
     font-weight: 700;
-
     margin-bottom: 2rem;
     color: #5f9ea0;
     background: #e9e9e9;
     padding: 1rem;
     border-radius: 0.75rem;
-
 }
 
 .login-form {
@@ -43,7 +41,6 @@ body {
     gap: 1.2rem;
 }
 
-
 .form-label {
     font-weight: 600;
     color: #2d3748;
@@ -51,7 +48,6 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    
 }
 
 .form-input {
@@ -75,6 +71,8 @@ body {
     color: #e53e3e;
     font-size: 0.85rem;
     margin-top: 0.3rem;
+    text-align: center;
+    font-weight: 600;
 }
 
 .btn-submit {
@@ -91,11 +89,12 @@ body {
     font-family: 'Montserrat', sans-serif;
     background: linear-gradient(135deg, #5f9ea0 0%, #48d5cf 100%);
     color: #fff;
+    transition: all 0.3s ease;
 }
+
 .btn-submit:hover {
     background: linear-gradient(135deg, #25d6cd 40%, #9afcff 80%);
 }
-
 
 .btn-submit-outline {
     border: 2px solid #5f9ea0;
@@ -105,34 +104,13 @@ body {
 
 .btn-submit-outline:hover {
     background: #f0f9f9;
-    color: #ff0000;
-
-}
-.reg-link {
-    text-align: center;
-    margin-top: 1.5rem;
-}
-
-.reg-link a {
-    color: #5f9ea0;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.reg-link a:hover {
-    color: #48d5cf;
-}
-
-.error-message {
-    text-align: center;
-    margin-top: 1rem;
-    font-weight: 600;
 }
 
 .login-container form+form {
     margin-top: 1.5rem;
     text-align: center;
 }
+
 .login-container .btn-outline {
     color: #5f9ea0;
     background: #ffffff;

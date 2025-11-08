@@ -1,37 +1,19 @@
-app.post('/login', async (req, res) => {
-    try {
-        const { rut, password } = req.body;
-        const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rut]);
+document.addEventListener("DOMContentLoaded", () => {
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const loginForm = document.getElementById('loginForm');
 
-        if (result.rows.length === 0) {
-            return res.render('login', {
-                style: 'simulator.css',
-                js: 'login.js',
-                title: 'Iniciar Sesión',
-                error: 'Usuario no encontrado'
-            });
+
+
+    loginForm.addEventListener('submit', (e) => {
+        const rut = document.getElementById('rut').value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!rut || !password) {
+            e.preventDefault();
+            alert("Por favor completa todos los campos.");
         }
+    });
 
-        const user = result.rows[0];
-
-        if (user.password !== password) {
-            return res.render('login', {
-                style: 'simulator.css',
-                js: 'login.js',
-                title: 'Iniciar Sesión',
-                error: 'Contraseña incorrecta'
-            });
-        }
-
-        req.session.user = { id: user.id, rut: user.rut, nombre: user.nombre };
-        res.redirect('/solicitud');
-
-    } catch (e) {
-        res.render('login', {
-            style: 'simulator.css',
-            js: 'login.js',
-            title: 'Iniciar Sesión',
-            error: 'Error del servidor'
-        });
-    }
+    document.getElementById('rut').focus();
 });

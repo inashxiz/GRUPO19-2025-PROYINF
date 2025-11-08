@@ -3,6 +3,7 @@ const { engine } = require('express-handlebars');
 const session = require('express-session')
 const pool = require('./database/db'); // Importar la conexión
 const { redirect } = require('express/lib/response');
+const { user } = require('pg/lib/defaults.js');
 const app = express();
 const port = 3000;
 
@@ -126,6 +127,7 @@ app.post('/history/save', (req, res) => {
       style: 'sim-results.css',
       js: 'sim-results.js',
       title: 'Resultados Simulación',
+      user: req.session.user || null,
       rut,
       renta,
       monto: snap.monto,
@@ -148,7 +150,8 @@ app.post('/history', (req, res) =>{
   res.render('simulator', {
       style: 'simulator.css', 
       title: 'Simulador Crédito de Consumo', 
-      js: 'simulator.js'
+      js: 'simulator.js',
+      user: req.session.user || null
     });
 })
 
@@ -160,6 +163,9 @@ app.post('/history/load', (req, res) => {
     style: 'sim-results.css',
     js: 'sim-results.js',
     title: 'Resultados Simulación',
+    user: req.session.user || null,
+    rut: sim.rut,
+    renta: sim.renta,
     monto: sim.monto,
     cuotas: sim.cuotas,
     tasaInteres: sim.tasaInteres,
@@ -186,6 +192,7 @@ app.post('/recalculate', (req, res) => {
     style: 'sim-results.css', 
     js: 'sim-results.js', 
     title: 'Resultados Simulación',
+    user: req.session.user || null,
     rut,
     renta: _renta, 
     monto: _monto, 
@@ -214,6 +221,7 @@ app.post('/simulation', (req, res) => {
     js: 'sim-results.js', 
     title: 'Resultados Simulación', 
     rut,
+    user: req.session.user || null,
     renta: _renta,
     monto: _monto, 
     cuotas: _cuotas, 
@@ -228,7 +236,7 @@ app.post('/simulation', (req, res) => {
 
 
 app.get('/simulator', (req, res) => {
-  res.render('simulator', {style: 'simulator.css', title: 'Simulador Crédito de Consumo', js: 'simulator.js'})
+  res.render('simulator', {style: 'simulator.css', title: 'Simulador Crédito de Consumo', js: 'simulator.js', user: req.session.user || null})
 })
 
 app.get('/', (req, res) => {
@@ -264,8 +272,48 @@ app.get('/login', (req, res) => {
   res.render('login', {
     style: 'simulator.css',
     js: 'login.js',
-    title: 'Iniciar Sesión'
+    title: 'Iniciar Sesión',
+    error: null
   });
+});
+
+
+app.get('/register', (req, res) => {
+  res.render('register', {
+    title: 'Crear Cuenta',
+    style: 'register.css',  
+    js: 'register.js',      
+    error: null
+  });
+});
+
+
+app.post('/register', async (req, res) => {
+  try {
+    const { rut, nombre, password } = req.body;
+    const existingUser = await pool.query('SELECT * FROM users WHERE rut = $1', [rut]);
+    if (existingUser.rows.length > 0) {
+      return res.render('login', {
+        style: 'simulator.css',
+        js: 'login.js',
+        title: 'Iniciar Sesión',
+        error: 'El usuario ya existe'
+      });
+    }
+
+    await pool.query(
+      'INSERT INTO users (rut, nombre, password) VALUES ($1, $2, $3)',
+      [rut, nombre, password]
+    );
+    res.redirect('/login');
+  } catch (e) {
+    res.render('login', {
+      style: 'simulator.css',
+      js: 'login.js',
+      title: 'Iniciar Sesión',
+      error: 'Error del servidor'
+    });
+  }
 });
 
 
@@ -294,7 +342,7 @@ app.post('/login', async (req, res) => {
     }
 
     req.session.user = { id: user.id, rut: user.rut, nombre: user.nombre };
-    res.redirect('/simulator');
+     res.redirect('/solicitud');
 
   } catch (e) {
     res.render('login', {
@@ -307,9 +355,10 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.post('/logout', (req, res) => {
-  req.session.destroy();
-  res.redirect('/login');
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
 });
 
 app.get('/solicitud', requireAuth, (req, res) => {
@@ -336,7 +385,6 @@ app.get('/solicitud', requireAuth, (req, res) => {
 
 
 app.post('/solicitud/prepare', requireAuth, (req, res) => {
-  // Guardar la simulación seleccionada para solicitar
   req.session.lastSimulation = req.body;
   res.json({ ok: true });
 });

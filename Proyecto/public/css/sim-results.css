@@ -68,6 +68,43 @@ body{
     background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
 }
 
+.card-header .greeting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Saludo a la izquierda, botón a la derecha */
+    gap: 10px;
+}
+
+/* Que el span con el saludo quede alineado a la izquierda */
+.card-header .greeting span {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* Form del botón logout alineado a la derecha */
+.card-header .greeting form {
+    margin: 0;
+}
+
+/* Estilo del botón logout */
+.card-header .greeting button {
+    background-color: #ffffff;
+    color: #5f9ea0;
+    border: 2px solid #5f9ea0;
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease-in-out;
+}
+
+.card-header .greeting button:hover {
+    background-color: #f0f9f9;
+}
+
+
+
 .important-results{
     display: grid;
     grid-template-columns: 1fr;
