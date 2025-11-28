@@ -466,4 +466,11 @@ app.get('/res-debt-rut', (req, res) => {
   });
 });
 
-//Sigue x aca aabajo la otra HU .... SI T ESTOY HABLANDO A TI!!! borra esto ok son las 2 am!
+// HU3 Registro de Pago
+app.get('/payment', (req, res) => {
+  res.render('payment', {
+    style: 'payment.css',
+    js: 'payment.js',
+    title: 'Pago de cuotas'
+  })
+})

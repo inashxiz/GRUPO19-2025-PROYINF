@@ -1,0 +1,22 @@
+<div class="container">
+    <h1>Webpay pero mejor</h1>
+    <form action="/simulator">
+        <h3>Selecciona tu método de pago</h3>
+        <label for="card">Tarjeta (Débito, Crédito, Prepago)</label>
+        <input type="radio" id="card" name="pay-method"><br>
+        <label for="other" name="other">onepay (y otras billteras digitales)</label>
+        <input type="radio" id="other" name="pay-method">
+        <div class="form-group">
+            <br>
+            <br>
+            <label for="card-number" class="form-label">
+                <i class="fa-regular fa-credit-card"></i>
+                Número de Tarjeta
+            </label>
+            <input type="text" id="card-number" name="card-number" class="form-input" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+            <span class="error-message" id="card-number-error"></span>
+        </div>
+        <br>
+        <button>Continuar</button>
+    </form>
+</div>
