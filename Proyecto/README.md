@@ -19,11 +19,16 @@ Ejecutar en terminal:
 2. (les instalará las dependencias se suele demorar un poco la primera vez con esto levantan el proyecto)  
 docker compose up --build
 
-3. Crear las tablas con "Get-Content database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
+3. Crear las tablas con Powershell: "Get-Content database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
+                               WSL: "cat database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
+                               cmd: "type database\migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
+
 
 4. Ir a http://localhost:3000/simulator para acceder a la HU:005 Simulación de Préstamo
 
 5. Ir a http://localhost:3000/solicitud para acceder a la HU:002 Solicitud de Préstamo
+
+6. Ir a http://localhost:3000/debts para acceder a la HU:006 Gestión de Deudas 
 
 (para detener los contenedores)  
 docker compose down -v

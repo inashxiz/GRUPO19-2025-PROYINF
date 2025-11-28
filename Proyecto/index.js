@@ -248,16 +248,6 @@ app.listen(port, () => {
 });
 
 
-/* 
--------TO DO LIST-------
-- [x] boton de "solicitar crédito" aka hacer la solicitud podría borrar el historial guardado en la bdd por el cliente -> historial temporal
-- [x] hacer bien cálculos de la simulación (sin costos adicionales, son todos cálculos puros)
-- [x] css + js de sim-results
-- [x] ajustar monto y/o cuotas y recalcular inmediatamente
-- [x] guardar solicitudes (temporalemnte) límite de 5 slots para guardar simulaciones, si se quiere agregar más se tienen que sobreescribir guardadas
-- [x] poder cargar previas solicitudes para hacer la solicitud
-- [] migraciones de la bdd ?
-*/
 
 //Historia de Usuario Simulación
 
@@ -424,3 +414,20 @@ app.post('/solicitud', requireAuth, async (req, res) => {
   }
 });
 
+//HU6 Gestión de deuda !
+
+app.get('/debts', (req, res) => {
+  res.render('debts', {
+    style: 'debts.css',
+    title: 'Gestión de Deuda'
+
+  });
+});
+app.get('/res-debt-rut', (req, res) => {
+  res.render('debts', {
+    style: 'res-debt-rut.css',
+    mensaje: "Aquí saldrán los datos del usuario jeje"
+  });
+});
+
+//Sigue x aca aabajo la otra HU .... SI T ESTOY HABLANDO A TI!!! borra esto ok son las 2 am!

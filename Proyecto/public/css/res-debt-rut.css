@@ -1,0 +1,43 @@
+
+.resultado-box {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 32px -8px rgba(45, 55, 72, 0.12);
+    margin-bottom: 2rem;
+}
+.resultado-box h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #5f9ea0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.mssg {
+    background: #edf2f7;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    border-left: 6px solid #5f9ea0;
+}
+.mssg p {
+    margin-bottom: 0.8rem;
+    font-size: 1.05rem;
+}
+.mssg strong {
+    color: #2b5160;
+}
+.btn-volver {
+    display: block;
+    margin-top: 1.5rem;
+    text-align: center;
+    padding: 0.9rem;
+    background: linear-gradient(135deg, #5f9ea0 0%, #48d5cf 100%);
+    color: #ffffff;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    text-decoration: none;
+}
+.btn-volver:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}

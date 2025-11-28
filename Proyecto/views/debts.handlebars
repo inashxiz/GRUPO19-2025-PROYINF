@@ -1,0 +1,48 @@
+<div class="container">
+    <div class="card">
+
+        {{!Es solo un ejemplo ! !!}}
+        {{#if mensaje}}
+        <div class="resultado-box">
+            <h2>{{mensaje}}</h2>
+            <div class="mssg">
+                <p>Este es un caso de ejemplo por si acaso !</p>
+                <p><strong>Nombre:</strong> Lionel Messi Cuccitini</p>
+                <p><strong>RUT:</strong> 00000000-0</p>
+                <p><strong>Préstamo:</strong> $20.000.000</p>
+                <p><strong>Cuotas:</strong> 12</p>
+                <p><strong>Valor cada Cuota:</strong>$1.790.477</p>
+                <p><strong>Estado del préstamo:</strong> Pendiente</p>
+                <p><strong>Cuotas Pagadas:</strong> 1–5</p>
+                <p><strong>Cuotas Faltantes:</strong> 6–12</p>
+                <p><strong>Cuotas pagadas fuera de plazo:</strong> 6–8</p>
+                <a href="/debts" class="btn-volver">Volver</a>
+            </div>
+        </div>
+        {{else}}
+        {{!Antes de apretar el boton  !!!}}
+
+
+        <div class="card-header">
+            <h1 class="card-title">Gestión de Deudas</h1>
+            <p class="card-description">Consulta créditos y su historial por RUT</p>
+        </div>
+
+        <div class="card-content">
+
+            <form action="/res-debt-rut" method="GET">
+                <div class="form-group">
+                    <label class="form-label" for="rut">
+                        <i class="fas fa-user"></i> Buscar cliente por RUT
+                    </label>
+                    <input type="text" id="rut" name="rut" class="form-input" placeholder="Ej: 12345678-9" required>
+                </div>
+
+                <button class="submit-button" type="submit">
+                    Buscar
+                </button>
+            </form>
+
+        </div>
+    </div>
+</div>

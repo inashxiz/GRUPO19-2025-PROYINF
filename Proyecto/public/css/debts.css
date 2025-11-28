@@ -1,0 +1,128 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    color: #2d3748;
+}
+
+
+.container {
+    width: 100%;
+    max-width: 50rem;
+    }
+
+.card {
+        background: #ffffff;
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 8px 32px -8px rgba(45, 55, 72, 0.08);
+}
+
+
+.card-header {
+        background: linear-gradient(135deg, #5f9ea0 0%, #48d5cf 100%);
+        padding: 2rem;
+        color: #ffffff;
+}
+
+
+.card-title {
+        font-size: 1.875rem;
+        font-weight: 700;
+}
+
+.card-description {
+        opacity: 0.9;
+}
+
+.card-content {
+        padding: 2rem;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    }
+
+
+.form-input {
+    width: 100%;
+    height: 3rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 0.75rem;
+    transition: all 0.3s;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #5f9ea0;
+    box-shadow: 0 0 0 3px rgba(95, 158, 160, 0.1);
+}
+
+
+.submit-button {
+    width: 100%;
+    height: 3rem;
+    color: #fff;
+    font-weight: 600;
+    background: linear-gradient(135deg, #5f9ea0 0%, #48d5cf 100%);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.submit-button:hover {
+    opacity: .9;
+    transform: translateY(-1px);
+}
+
+
+.info-box {
+    background: #edf2f7;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1rem;
+    border-left: 5px solid #5f9ea0;
+}
+
+.info-label {
+    font-weight: 700;
+}
+
+.status-paid {
+    color: #38a169;
+}
+
+.status-pending {
+    color: #dd6b20;
+}
+
+.status-late {
+    color: #e53e3e;
+}
