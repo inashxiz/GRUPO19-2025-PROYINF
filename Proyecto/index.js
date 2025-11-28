@@ -96,6 +96,34 @@ function simulateCAE(monto, cuotaMensual, cuotas){
   return cae*100;
 }
 
+function calculateLoanScore(monthlyFee, monthlyIncome, totalLoanAmount, duration) {
+ /* Calcula score entre 0 a 100 basándose en el ratio de cuota/ingreso mensual,
+ monto total/ingreso anual, y duración del préstamo. Falta tomar en cuenta el historial,
+ pero como todavía no lo implementamos no se puede hacer mucho */
+  let score = 100;
+ 
+  const debtToIncome = (monthlyFee / monthlyIncome) * 100;
+  if (debtToIncome > 50) score -= 30;
+  else if (debtToIncome > 40) score -= 20;
+  else if (debtToIncome > 30) score -= 10;
+  else if (debtToIncome > 20) score -= 5;
+  
+  const loanToAnnualIncome = totalLoanAmount / (monthlyIncome * 12);
+  if (loanToAnnualIncome > 10) score -= 25;
+  else if (loanToAnnualIncome > 5) score -= 15;
+  else if (loanToAnnualIncome > 3) score -= 8;
+  
+  if (duration >= 60) score -= 10;
+  else if (duration > 48) score -= 7;
+  else if (duration > 36) score -= 3; //créditos a menos de 36 meses no imponen penalización 
+  
+  /* !!!!!!!!!!!!Cuando esté implementado el historial de pagos, aquí hay que poner una 
+  4ta condición para restarle. Esta debería ser la que más peso tenga, así que
+  tendríamos que reajustar los números de las primeras 3 también. */
+  
+  return Math.max(0, Math.min(100, Math.round(score))); //para que sea un int
+}
+
 function buildSimulationSnapshot({rut, renta, monto, cuotas, fechaPrimerPago}){
   const _monto = parseNumber(monto);
   const _cuotas = parseNumber(cuotas);
@@ -103,6 +131,7 @@ function buildSimulationSnapshot({rut, renta, monto, cuotas, fechaPrimerPago}){
   const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
   const ctc = (_cuotas * cuotaMensual)
   const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
+  const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
   return{
     id: new Date().toISOString(),
     rut,
@@ -113,7 +142,8 @@ function buildSimulationSnapshot({rut, renta, monto, cuotas, fechaPrimerPago}){
     tasaInteres: (tasaInteres*100),
     cuotaMensual,
     ctc,
-    cae: +cae.toFixed(2)
+    cae: +cae.toFixed(2),
+    creditScore
   }
 }
 
@@ -136,6 +166,7 @@ app.post('/history/save', (req, res) => {
       cuotaMensual: snap.cuotaMensual,
       ctc: snap.ctc,
       cae: snap.cae,
+      creditScore: snap.creditScore,
       fechaPrimerPago: snap.fechaPrimerPago,
       simulations: req.session.simulations
     });
@@ -186,6 +217,7 @@ app.post('/recalculate', (req, res) => {
   const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
   const ctc = (_cuotas*cuotaMensual);
   const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
+  const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
   const fechaPrimerPago = req.session.lastInputs?.fechaPrimerPago;
 
   res.render('sim-results', { 
@@ -200,7 +232,8 @@ app.post('/recalculate', (req, res) => {
     tasaInteres: (tasaInteres*100), 
     cuotaMensual, 
     ctc, 
-    cae: +cae.toFixed(2), 
+    cae: +cae.toFixed(2),
+    creditScore,
     fechaPrimerPago,
     simulations: req.session.simulations});
 })
@@ -214,6 +247,7 @@ app.post('/simulation', (req, res) => {
   const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
   const ctc = (_cuotas*cuotaMensual);
   const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
+  const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
   
   req.session.lastInputs = {rut, monto, renta, cuotas, fechaPrimerPago}
   res.render('sim-results', { 
@@ -229,6 +263,7 @@ app.post('/simulation', (req, res) => {
     cuotaMensual, 
     ctc, 
     cae: +cae.toFixed(2), 
+    creditScore,
     fechaPrimerPago,
     simulations: req.session.simulations
   });
@@ -369,7 +404,8 @@ app.get('/solicitud', requireAuth, (req, res) => {
     tasaInteres: sim.tasaInteres,
     cuotaMensual: sim.cuotaMensual,
     ctc: sim.ctc,
-    cae: sim.cae
+    cae: sim.cae,
+    creditScore: sim.creditScore
   });
 });
 
