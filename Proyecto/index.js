@@ -1,4 +1,5 @@
 const express = require('express');
+const PDFDocument = require('pdfkit');
 const { engine } = require('express-handlebars');
 const session = require('express-session')
 const pool = require('./database/db'); // Importar la conexión
@@ -448,6 +449,56 @@ app.post('/solicitud', requireAuth, async (req, res) => {
   } catch (e) {
     res.status(500).json({ ok: false, error: e.message });
   }
+});
+
+app.get('/contrato', async (req, res) => {
+    try {
+        const doc = new PDFDocument({
+            size: 'A4',
+            margins: {
+                top: 72,
+                bottom: 72,
+                left: 72,
+                right: 72
+            }
+        });
+
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=contrato.pdf');
+
+        doc.pipe(res);
+        doc.fontSize(20)
+           .text('Contrato de Préstamo', { align: 'center' })
+           .moveDown();
+        doc.fontSize(12)
+           .text('Este es un documento de prueba para generación de PDF.')
+           .moveDown();
+        doc.fontSize(16)
+           .text('Datos del Préstamo')
+           .moveDown(0.5);
+        doc.fontSize(12)
+           .text(`Fecha: ${new Date().toLocaleDateString()}`)
+           .text(`Monto: $${req.session.lastSimulation?.monto || 'N/A'}`)
+           .text(`Cuotas: ${req.session.lastSimulation?.cuotas || 'N/A'}`)
+           .moveDown();
+        doc.fontSize(16)
+           .text('Términos y Condiciones')
+           .moveDown(0.5);
+        doc.fontSize(12)
+           .text('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', {
+               align: 'justify'
+           })
+           .moveDown(2);
+        doc.moveDown(3)
+           .text('____________________________', { align: 'center' })
+           .text('Firma del Cliente', { align: 'center' });
+
+        doc.end();
+        
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('Error al generar el PDF');
+    }
 });
 
 //HU6 Gestión de deuda !
