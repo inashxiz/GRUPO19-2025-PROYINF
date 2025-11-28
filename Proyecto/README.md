@@ -17,7 +17,7 @@ Ejecutar en terminal:
 1. Deben navegar hasta la carpeta GRUPO19-2025-PROYINF/Proyecto
 
 2. (les instalará las dependencias se suele demorar un poco la primera vez con esto levantan el proyecto)  
-docker compose up --build
+docker compose build --no-cache y luego docker-compose up
 
 3. Crear las tablas con Powershell: "Get-Content database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
                                WSL: "cat database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
@@ -28,7 +28,11 @@ docker compose up --build
 
 5. Ir a http://localhost:3000/solicitud para acceder a la HU:002 Solicitud de Préstamo
 
-6. Ir a http://localhost:3000/debts para acceder a la HU:006 Gestión de Deudas 
+6. Ir a http://localhost:3000/debts para acceder a la HU:006 Gestión de Deudas
+
+7. Ir a http://localhost:3000/payment para acceder a la HU:003 Registro de Pagos
+
+8. Ir a http://localhost:3000/contrato para acceder a la HU:007 Generación de Contrato
 
 (para detener los contenedores)  
 docker compose down -v
