@@ -523,5 +523,34 @@ app.get('/payment', (req, res) => {
     style: 'payment.css',
     js: 'payment.js',
     title: 'Pago de cuotas'
-  })
-})
+  });
+});
+
+const pool = require('./database/db');
+
+app.get('/desembolso', async (req, res) => {
+  try {
+    const prestamos = await pool.query("SELECT id, rut, monto, estado, user_id FROM prestamos WHERE estado IN ('VIGENTE', 'APROBADO', 'FIRMADO')");
+    res.render('desembolso', {
+      style: 'desembolso.css',
+      title: 'Desembolso de Préstamo',
+      prestamosAprobados: prestamos.rows
+    });
+  } catch (e) {
+    res.status(500).send('Error al cargar desembolso');
+  }
+});
+
+
+app.post('/desembolso/ordenar', async (req, res) => {
+  const { prestamoId } = req.body;
+  try {
+    await pool.query(
+      "UPDATE prestamos SET estado = 'VIGENTE' WHERE id = $1",
+      [prestamoId]
+    );
+    res.redirect('/desembolso');
+  } catch (e) {
+    res.status(500).send('Error al ordenar desembolso');
+  }
+});
