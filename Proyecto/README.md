@@ -34,7 +34,9 @@ docker compose build --no-cache y luego docker-compose up
 
 8. Ir a http://localhost:3000/contrato para acceder a la HU:007 Generación de Contrato
 
-9.Ir a http://localhost:3000/desembolso para acceder a la HU:007 Generación de Contrato 
+9. Ir a http://localhost:3000/desembolso para acceder a la HU:004 Desembolso del Préstamo
+
+
 
 (para detener los contenedores)  
 docker compose down -v

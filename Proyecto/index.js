@@ -526,8 +526,6 @@ app.get('/payment', (req, res) => {
   });
 });
 
-const pool = require('./database/db');
-
 app.get('/desembolso', async (req, res) => {
   try {
     const prestamos = await pool.query("SELECT id, rut, monto, estado, user_id FROM prestamos WHERE estado IN ('VIGENTE', 'APROBADO', 'FIRMADO')");
