@@ -1,0 +1,90 @@
+
+        <tbody>
+            {{#each prestamosAprobados}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{cliente}}</td>
+                <td>{{monto}}</td>
+                <td>
+                    <form method="POST" action="/desembolso/ordenar">
+                        <input type="hidden" name="prestamoId" value="{{id}}" />
+                        <button type="submit">Ordenar desembolso</button>
+                    </form>
+                </td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</section>
+
+
+<section>
+
+
+    <div class="desembolso-container">
+        <h1>Desembolso de Préstamos</h1>
+        <section>
+            <h2>Solicitudes aprobadas y firmadas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Préstamo</th>
+                        <th>Cliente (RUT)</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each prestamosAprobados}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{rut}}</td>
+                        <td>${{monto}}</td>
+                        <td>{{estado}}</td>
+                        <td>
+                            <form method="POST" action="/desembolso/ordenar">
+                                <input type="hidden" name="prestamoId" value="{{id}}" />
+                                <button type="submit">Ordenar desembolso</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+        <section>
+            <h2>Órdenes de desembolso pendientes</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Orden</th>
+                        <th>ID Préstamo</th>
+                        <th>Cliente</th>
+                        <th>Monto</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>5001</td>
+                        <td>101</td>
+                        <td>Juan Pérez</td>
+                        <td>$5.000.000</td>
+                        <td>
+                            <form method="POST" action="/desembolso/confirmar" style="display:inline;">
+                                <input type="hidden" name="ordenId" value="5001" />
+                                <button type="submit">Confirmar transferencia</button>
+                            </form>
+                            <form method="POST" action="/desembolso/error" style="display:inline;">
+                                <input type="hidden" name="ordenId" value="5001" />
+                                <input type="text" name="motivo" placeholder="Motivo del error" required />
+                                <button type="submit">Registrar error</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        <div class="mensaje-estado">Ejemplo: El desembolso está pendiente de confirmación.</div>
+

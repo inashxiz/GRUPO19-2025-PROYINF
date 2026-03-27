@@ -114,21 +114,16 @@ async function proceedWithLoan() {
             showToast('Redirigiendo a solicitud...', 'success');
             setTimeout(() => {
                 window.location.href = '/solicitud';
-            }, 1500);
+            }, 500);
         } else {
             showToast('Error al preparar solicitud', 'error');
         }
     } catch (error) {
         console.error('Error:', error);
-        await fetch('/session/pending-sim', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(simulationData)
-        });
-        showToast('Debe iniciar sesión', 'info');
+        showToast('Debe iniciar sesión primero', 'info');
         setTimeout(() => {
             window.location.href = '/login';
-        }, 1500);
+        }, 1000);
     }
 }
 

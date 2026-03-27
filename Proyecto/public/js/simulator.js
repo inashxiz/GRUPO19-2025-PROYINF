@@ -51,7 +51,7 @@ function clearError(fieldId) {
 
 function validateForm() {
     var isValid = true;
-    ['rut', 'monto', 'renta', 'cuotas', 'fechaPrimerPago'].forEach(clearError);
+    ['rut', 'monto', 'renta', 'cuotas'].forEach(clearError);
     
     const rut = document.getElementById('rut').value;
     if (!rut) {
@@ -95,11 +95,6 @@ function validateForm() {
         isValid = false;
     }
     
-    const fechaPrimerPago = document.getElementById('fechaPrimerPago').value;
-    if(!fechaPrimerPago) {
-        showError('fechaPrimerPago', 'La fecha es requerida');
-        isValid = false;
-    }
     return isValid;
 }
 
@@ -108,19 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const rutInput = document.getElementById('rut');
     const montoInput = document.getElementById('monto');
     const rentaInput = document.getElementById('renta');
-    const fechaPrimerPago = document.getElementById('fechaPrimerPago');
-
-    const minDate = new Date();
-    const maxDate = new Date();
-    maxDate.setMonth(minDate.getMonth()+1);
-
-
-    const formatDate = (date) => {
-        return date.toISOString().substring(0, 10);
-    }
-
-    fechaPrimerPago.min = formatDate(minDate);
-    fechaPrimerPago.max = formatDate(maxDate);
     
     rutInput.addEventListener('input', function(e) {
         const cursorPosition = e.target.selectionStart;
