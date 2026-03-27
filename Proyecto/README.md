@@ -36,7 +36,7 @@ docker compose build --no-cache y luego docker-compose up
 
 9. Ir a http://localhost:3000/desembolso para acceder a la HU:004 Desembolso del Préstamo
 
-
+10. Ir a http://localhost:3000/ para acceder a la vista de Login
 
 (para detener los contenedores)  
 docker compose down -v
