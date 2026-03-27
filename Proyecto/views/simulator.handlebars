@@ -1,5 +1,4 @@
-<body>
-    <main class="container">
+<main class="container">
         <div class="card">
             <div class="card-header">
                 <h1 class="card-title">Simulador Crédito de Consumo</h1>
@@ -48,7 +47,8 @@
                             <i class="fa-regular fa-calendar"></i>
                             Fecha del primer pago (mm/dd/yyyy)
                         </label>
-                        <input type="date" id="fechaPrimerPago" name="fechaPrimerPago" class="form-input" readonly><script>document.getElementById('fechaPrimerPago').value = new Date().toISOString().substring(0, 10);</script>
+                        <input type="date" id="fechaPrimerPago" name="fechaPrimerPago" class="form-input">
+                        <span class="error-message" id="fechaPrimerPago-error"></span>
                     </div>
 
                     <button type="submit" class="submit-button" id="submitBtn">SIMULAR</button>
@@ -56,4 +56,3 @@
             </div>
         </div>
     </main>
-</body>

@@ -1,13 +1,12 @@
-# Grupo 13
+# Grupo 19
 
-Este es el repositorio del *Grupo 13*, cuyos integrantes son:
+Este es el repositorio del *Grupo 19*, cuyos integrantes son:
 
 * Cristóbal Brandau - 202373552-3
 * Carlos Bravo - 202373531-0
 * Ignacia Nettle - 202373547-7
 * Elismar Suárez - 202304535-7
-* Balduino Díaz - 202373626-0
-* **Tutor**: Carlos Arévalo
+* **Tutor**: Felipe Fernández
 ## Wiki
 
 Puede acceder a la Wiki mediante el siguiente [enlace](https://github.com/inashxiz/GRUPO19-2025-PROYINF/wiki)
