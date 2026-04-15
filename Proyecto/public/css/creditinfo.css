@@ -1,0 +1,20 @@
+/* Importamos todo lo de login para mantener consistencia */
+@import 'login.css';
+
+/* Ajuste específico para que los inputs de archivo se vean limpios */
+input[type="file"] {
+    padding: 0.5rem;
+    font-size: 0.9rem;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+input[type="file"]::file-selector-button {
+    background: #5f9ea0;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
+}

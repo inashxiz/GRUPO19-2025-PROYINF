@@ -367,45 +367,91 @@ app.get('/sim-results/restore', (req, res) => {
     });
 });
 
-  //------------------------SIMULATOR------------------------
+//------------------------SIMULATOR------------------------
+
+app.get('/simulator', (req, res) => {
+  res.render('simulator', {
+    style: 'simulator.css', 
+    title: 'Simulador Crédito de Consumo', 
+    js: 'simulator.js', 
+    user: req.session.user || null})
+})
+
+app.post('/simulation', (req, res) => {
+  const { rut, monto, renta, cuotas, fechaPrimerPago } = req.body;;
+  const _monto = parseNumber(monto);
+  const _cuotas = parseNumber(cuotas);
+  const _renta = parseNumber(renta);
+  var tasaInteres = monthlyInterestRate(_monto, _cuotas);
+  const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
+  const ctc = (_cuotas*cuotaMensual);
+  const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
+  const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
   
-  app.get('/simulator', (req, res) => {
-    res.render('simulator', {
-      style: 'simulator.css', 
-      title: 'Simulador Crédito de Consumo', 
-      js: 'simulator.js', 
-      user: req.session.user || null})
-  })
-  
-  app.post('/simulation', (req, res) => {
-    const { rut, monto, renta, cuotas, fechaPrimerPago } = req.body;;
-    const _monto = parseNumber(monto);
-    const _cuotas = parseNumber(cuotas);
-    const _renta = parseNumber(renta);
-    var tasaInteres = monthlyInterestRate(_monto, _cuotas);
-    const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
-    const ctc = (_cuotas*cuotaMensual);
-    const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
-    const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
-    
-    req.session.lastInputs = {rut, monto, renta, cuotas, fechaPrimerPago}
-    res.render('sim-results', { 
-      style: 'sim-results.css', 
-      js: 'sim-results.js', 
-      title: 'Resultados Simulación', 
-      rut,
-      user: req.session.user || null,
-      renta: _renta,
-      monto: _monto, 
-      cuotas: _cuotas, 
-      tasaInteres: (tasaInteres*100),
-      cuotaMensual, 
-      ctc, 
-      cae: +cae.toFixed(2), 
-      creditScore,
-      fechaPrimerPago,
-      simulations: req.session.simulations
-    });
+  req.session.lastInputs = {rut, monto, renta, cuotas, fechaPrimerPago}
+  res.render('sim-results', { 
+    style: 'sim-results.css', 
+    js: 'sim-results.js', 
+    title: 'Resultados Simulación', 
+    rut,
+    user: req.session.user || null,
+    renta: _renta,
+    monto: _monto, 
+    cuotas: _cuotas, 
+    tasaInteres: (tasaInteres*100),
+    cuotaMensual, 
+    ctc, 
+    cae: +cae.toFixed(2), 
+    creditScore,
+    fechaPrimerPago,
+    simulations: req.session.simulations
   });
+});
+
+
+
+//------------------------CREDIT INFO------------------------
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' }); // Los archivos se guardarán temporalmente aquí
+
+// RUTA GET: Mostrar el formulario
+app.get('/creditinfo', (req, res) => {
+    // Verificamos si el usuario está logueado (como en Django login_required)
+    if (!req.session.user) return res.redirect('/login');
+    
+    res.render('creditinfo', {
+        title: 'Información Crediticia',
+        style: 'creditinfo.css',
+        js: 'creditinfo.js',
+        user: req.session.user
+    });
+});
+
+// RUTA POST: Recibir datos y archivos
+// .fields permite recibir múltiples archivos con nombres diferentes
+app.post('/creditinfo', upload.fields([
+    { name: 'liquidacion', maxCount: 1 },
+    { name: 'cotizaciones', maxCount: 1 }
+]), async (req, res) => {
+    try {
+        const { sueldo, antiguedad, deudas } = req.body;
+        const rut = req.session.user.rut;
+
+        // Aquí podrías guardar estos datos en una nueva tabla 'credit_info'
+        // Por ahora lo logueamos en consola para verificar
+        console.log(`Datos recibidos de RUT: ${rut}`);
+        console.log(`Sueldo: ${sueldo}, Antigüedad: ${antiguedad}, Deudas: ${deudas}`);
+        console.log('Archivos subidos:', req.files);
+
+        // Redirigir a una página de éxito o al simulador
+        res.redirect('/simulator'); 
+    } catch (err) {
+        console.error(err);
+        res.render('creditinfo', {
+            title: 'Información Crediticia',
+            error: 'Hubo un error al subir los archivos.'
+        });
+    }
+});
 
 
