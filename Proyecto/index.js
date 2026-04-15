@@ -186,8 +186,11 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', async (req, res) => { //hecho muy a la rápida, posiblemente la cague pero está bien manejado el redirect para el caso que me importaba
-    const { rut, password } = req.body;
-    const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rut]);
+
+    let { rut, password } = req.body;
+    const rutLimpio = rut.replace(/\./g, '').trim();
+    
+    const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rutLimpio]);
     const user = result.rows[0];
     if (!user || user.password !== password) {
         return res.render('login', {
@@ -204,6 +207,47 @@ app.post('/login', async (req, res) => { //hecho muy a la rápida, posiblemente 
     return res.redirect('/simulator'); //para cuando estoy simplemente iniciando sesión desde cero
 });
 
+//------------------------REGISTRO------------------------ 
+
+// RUTA GET: Muestra el formulario de registro al usuario
+app.get('/register', (req, res) => {
+    res.render('register', {
+        title: 'Crear Cuenta',
+        error: null
+        // No pasamos "js" ni "style" porque ya los pusiste fijos en el HTML que me mostraste
+    });
+});
+
+// RUTA POST: Recibe los datos del formulario y los guarda en Postgres
+app.post('/register', async (req, res) => {
+    // Extraemos los datos del formulario (req.body)
+
+    let { nombre, rut, password } = req.body;
+
+    const rutLimpio = rut.replace(/\./g, '').trim();
+    
+    // Como tu formulario actual no tiene campo "email", 
+    // definimos uno por defecto para que la DB no de error si es NOT NULL.
+    const email = `${rutLimpio}@example.cl`;
+
+    try {
+        await pool.query(
+            'INSERT INTO users (rut, password, nombre, email) VALUES ($1, $2, $3, $4)',
+            [rutLimpio, password, nombre, email]
+        );
+
+        console.log(`Usuario ${nombre} registrado con éxito.`);
+        res.redirect('/login');
+    } catch (err) {
+        console.error("Error en el registro:", err.message);
+        
+        // Manejo de errores estilo Django: si el RUT ya existe
+        res.render('register', {
+            title: 'Crear Cuenta',
+            error: 'El RUT ya está registrado en nuestro sistema.'
+        });
+    }
+});
 //------------------------SIM-RESULTS------------------------
 
 app.post('/history/save', (req, res) => {
