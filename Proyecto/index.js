@@ -412,7 +412,21 @@ app.post('/simulation', (req, res) => {
 
 //------------------------CREDIT INFO------------------------
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' }); // Los archivos se guardarán temporalmente aquí
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'uploads/')
+    },
+    filename: function (req, file, cb) {
+        const rut = req.session.user.rut.replace(/\./g, '').replace(/-/g, '');
+        const timestamp = Date.now();
+        const extension = file.originalname.split('.').pop();
+        // Resultado: 18555444k-carnet-1713387300.jpg
+        cb(null, `${rut}-${file.fieldname}-${timestamp}.${extension}`);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 // RUTA GET: Mostrar el formulario
 app.get('/creditinfo', (req, res) => {
@@ -429,29 +443,61 @@ app.get('/creditinfo', (req, res) => {
 
 // RUTA POST: Recibir datos y archivos
 // .fields permite recibir múltiples archivos con nombres diferentes
+
 app.post('/creditinfo', upload.fields([
     { name: 'liquidacion', maxCount: 1 },
-    { name: 'cotizaciones', maxCount: 1 }
+    { name: 'cotizaciones', maxCount: 1 }, 
+    { name: 'carnet', maxCount: 1 }       
 ]), async (req, res) => {
+    // 1. Obtener cliente del pool antes del try
+    const client = await pool.connect(); 
+
     try {
+        // Validación básica: Verificar que los 3 archivos llegaron
+        if (!req.files || !req.files['liquidacion'] || !req.files['cotizaciones'] || !req.files['carnet']) {
+            throw new Error('Debes subir los tres documentos solicitados.');
+        }
+
         const { sueldo, antiguedad, deudas } = req.body;
         const rut = req.session.user.rut;
 
-        // Aquí podrías guardar estos datos en una nueva tabla 'credit_info'
-        // Por ahora lo logueamos en consola para verificar
-        console.log(`Datos recibidos de RUT: ${rut}`);
-        console.log(`Sueldo: ${sueldo}, Antigüedad: ${antiguedad}, Deudas: ${deudas}`);
-        console.log('Archivos subidos:', req.files);
+        await client.query('BEGIN');
 
-        // Redirigir a una página de éxito o al simulador
-        res.redirect('/simulator'); 
+        // 2. Iterar sobre los archivos subidos
+        // Ajustado a tu tabla 'documento' que NO tiene id_solicitud
+        for (const fieldName in req.files) {
+            const file = req.files[fieldName][0];
+            const queryText = `
+                INSERT INTO documento (rut_usuario, tipo_documento, nombre_original, nombre_sistema, ruta_archivo)
+                VALUES ($1, $2, $3, $4, $5)
+            `;
+            const values = [
+                rut, 
+                fieldName, 
+                file.originalname, 
+                file.filename, 
+                file.path
+            ];
+            await client.query(queryText, values);
+        }
+
+        await client.query('COMMIT');
+        res.redirect('/simulator');
+
     } catch (err) {
+        // Solo hacemos ROLLBACK si la transacción llegó a empezar
+        try { await client.query('ROLLBACK'); } catch (e) { /* ignore */ }
+        
         console.error(err);
         res.render('creditinfo', {
+            style: 'creditinfo.css',
+            js: 'creditinfo.js',
             title: 'Información Crediticia',
-            error: 'Hubo un error al subir los archivos.'
+            user: req.session.user || null,
+            error: err.message || 'Hubo un error al subir los archivos.'
         });
+    } finally {
+        // 3. Liberar el cliente siempre
+        client.release();
     }
 });
-
-

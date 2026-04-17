@@ -22,6 +22,21 @@ CREATE TABLE IF NOT EXISTS prestamos (
   cae DECIMAL(5,2),
   created_at TIMESTAMP DEFAULT now()
 );
+CREATE TABLE IF NOT EXISTS documento (
+    id_documento SERIAL PRIMARY KEY,
+    rut_usuario VARCHAR(10) NOT NULL, -- Para saber de quién es sin saltar de tabla
+    tipo_documento VARCHAR(50) NOT NULL, -- 'liquidacion', 'cotizaciones', 'carnet'
+    nombre_original TEXT NOT NULL, -- Ejemplo: "mi_foto.jpg"
+    nombre_sistema TEXT NOT NULL, -- Ejemplo: "12345678k-carnet-1713387300.jpg"
+    ruta_archivo TEXT NOT NULL, 
+    metodo_ingreso VARCHAR(20) DEFAULT 'Manual',
+    datos_capturados_ocr JSONB,
+    estado_validacion VARCHAR(30) DEFAULT 'Pendiente',
+    fecha_carga TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Foreign key (ajustar según el nombre de tu tabla de solicitudes)
+    CONSTRAINT fk_rut FOREIGN KEY (rut_usuario) REFERENCES users(rut) ON DELETE CASCADE
+);
 
 CREATE INDEX IF NOT EXISTS idx_prestamos_user_id ON prestamos(user_id);
 CREATE INDEX IF NOT EXISTS idx_prestamos_rut ON prestamos(rut);

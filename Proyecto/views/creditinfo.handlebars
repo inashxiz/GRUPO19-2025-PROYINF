@@ -4,14 +4,16 @@
     </div>
 
     <form class="login-form" action="/creditinfo" method="POST" id="creditForm" enctype="multipart/form-data">
+        
         <label class="form-label" for="sueldo">Sueldo Líquido</label>
-        <input class="form-input" type="number" id="sueldo" name="sueldo" placeholder="Ej: 800000" required>
+        <input class="form-input" type="text" id="sueldo" name="sueldo" placeholder="Ej: $800.000" required>
 
         <label class="form-label" for="antiguedad">Antigüedad Laboral (Años)</label>
         <input class="form-input" type="number" id="antiguedad" name="antiguedad" placeholder="Ej: 2" required>
 
         <label class="form-label" for="deudas">Deudas Totales</label>
-        <input class="form-input" type="number" id="deudas" name="deudas" placeholder="Ej: 1500000" required>
+        <input class="form-input" type="text" id="deudas" name="deudas" placeholder="Ej: $1.500.000" required>
+
 
         <label class="form-label" for="liquidacion">Última Liquidación de Sueldo</label>
         <input class="form-input" type="file" id="liquidacion" name="liquidacion" accept=".pdf,.jpg,.png" required>
@@ -19,13 +21,19 @@
         <label class="form-label" for="cotizaciones">Últimas 12 Cotizaciones</label>
         <input class="form-input" type="file" id="cotizaciones" name="cotizaciones" accept=".pdf,.jpg,.png" required>
 
+        <label class="form-label" for="carnet">Cédula de Identidad (Ambos lados)</label>
+        <input class="form-input" type="file" id="carnet" name="carnet" accept="image/*,.pdf" required>
+        <span id="carnet-error" class="error-message"></span>
+
         <button class="btn-submit" type="submit">
             <i class="fas fa-upload"></i> Enviar Información
         </button>
     </form>
 
     {{#if error}}
-    <div class="error-message">{{error}}</div>
+    <div class="error-message" style="color: #ff4d4d; margin-top: 10px; text-align: center;">
+        {{error}}
+    </div>
     {{/if}}
 
     <div class="reg-link">

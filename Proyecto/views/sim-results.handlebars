@@ -88,8 +88,10 @@
                         <li class="history-item">
                             <div class="history-item-content">
                                 <div>
-                                    <strong>${{this.monto}}</strong> en {{this.cuotas}} cuotas <br>
-                                    <small> · CAE {{this.cae}}% · Cuota ${{this.cuotaMensual}}</small>
+                                    <strong>$ <span class="format-history">{{this.monto}}</span></strong> en {{this.cuotas}} cuotas <br>
+                                    <small> 
+                                        · CAE {{this.cae}}% · Cuota $ <span class="format-history">{{this.cuotaMensual}}</span>
+                                    </small>
                                 </div>
 
                                 <form action="/history/load" class="inline-form" method="POST" >

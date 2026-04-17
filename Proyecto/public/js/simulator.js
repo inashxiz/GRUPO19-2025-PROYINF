@@ -50,39 +50,24 @@ function clearError(fieldId) {
 }
 
 function validateForm() {
-    var isValid = true;
+var isValid = true;
     ['rut', 'monto', 'renta', 'cuotas', 'fechaPrimerPago'].forEach(clearError);
     
-    const rut = document.getElementById('rut').value;
-    if (!rut) {
-        showError('rut', 'El RUT es requerido');
-        isValid = false;
-    } else if (!validateRUT(rut)) {
-        showError('rut', 'RUT inválido. Formato: 12345678-9');
-        isValid = false;
-    }
+
+    const rentaRaw = document.getElementById('renta').value.trim();
     
-    const monto = document.getElementById('monto').value;
-    const montoNumber = parseFloat(monto.replace(/\./g, ''));
-    if (!monto) {
-        showError('monto', 'El monto es requerido');
-        isValid = false;
-    } else if (isNaN(montoNumber) || montoNumber < 500000) {
-        showError('monto', 'Ingresa un monto válido. El mínimo es 500.000');
-        isValid = false;
-    } else if (isNaN(montoNumber) || montoNumber > 20000000) {
-        showError('monto', 'Ingresa un monto válido. El máximo es 20.000.000');
-        isValid = false;
-    }
-    
-    const renta = document.getElementById('renta').value;
-    const rentaNumber = parseFloat(renta.replace(/\./g, ''));
-    if (!renta) {
+
+    const rentaClean = rentaRaw.replace(/\./g, '');
+
+    if (!rentaClean) { // Usamos la variable limpia
         showError('renta', 'La renta es requerida');
         isValid = false;
-    } else if (isNaN(rentaNumber) || rentaNumber <= 0) {
-        showError('renta', 'Ingresa una renta válida');
-        isValid = false;
+    } else {
+        const rentaNumber = parseFloat(rentaClean);
+        if (isNaN(rentaNumber) || rentaNumber <= 0) {
+            showError('renta', 'Ingresa una renta válida');
+            isValid = false;
+        }
     }
     
     const cuotas = document.getElementById('cuotas').value;
@@ -163,12 +148,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (validateForm()) {
             const submitBtn = document.getElementById('submitBtn');
+            
+
+            const montoInput = document.getElementById('monto');
+            const rentaInput = document.getElementById('renta');
+            
+            montoInput.value = montoInput.value.replace(/\./g, '');
+            rentaInput.value = rentaInput.value.replace(/\./g, '');
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'PROCESANDO...';
-            setTimeout(() => {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'SIMULAR';
-            }, 1500);
+            
+            // Quitamos el setTimeout para el submit real, o se enviará tarde
             form.submit();
         }
     });
