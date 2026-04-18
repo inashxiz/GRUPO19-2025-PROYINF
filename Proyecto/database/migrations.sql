@@ -38,9 +38,30 @@ CREATE TABLE IF NOT EXISTS documento (
     CONSTRAINT fk_rut FOREIGN KEY (rut_usuario) REFERENCES users(rut) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS antecedentes (
+    id_antecedente SERIAL PRIMARY KEY,
+    rut_usuario VARCHAR(12) NOT NULL,
+    
+    -- Información declarada en el formulario creditinfo
+    sueldo_declarado BIGINT NOT NULL,
+    antiguedad_laboral INTEGER NOT NULL,
+    deudas_totales BIGINT NOT NULL,
+    
+    -- Referencias a los documentos específicos que respaldan esta info
+    id_doc_liquidacion INTEGER REFERENCES documento(id_documento),
+    id_doc_cotizaciones INTEGER REFERENCES documento(id_documento),
+    id_doc_carnet INTEGER REFERENCES documento(id_documento),
+    
+    fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- Relación con la tabla de usuarios
+    CONSTRAINT fk_user_antecedentes FOREIGN KEY (rut_usuario) REFERENCES users(rut) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_prestamos_user_id ON prestamos(user_id);
 CREATE INDEX IF NOT EXISTS idx_prestamos_rut ON prestamos(rut);
 CREATE INDEX IF NOT EXISTS idx_users_rut ON users(rut);
+CREATE INDEX IF NOT EXISTS idx_antecedentes_rut ON antecedentes(rut_usuario);
 
 --user de prueba
 INSERT INTO users (rut, password, nombre, email) 

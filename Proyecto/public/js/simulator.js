@@ -87,7 +87,6 @@ var isValid = true;
     }
     return isValid;
 }
-
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('creditForm');
     const rutInput = document.getElementById('rut');
@@ -95,71 +94,75 @@ document.addEventListener('DOMContentLoaded', function() {
     const rentaInput = document.getElementById('renta');
     const fechaPrimerPago = document.getElementById('fechaPrimerPago');
 
+    // --- 1. Formateo inicial de valores sugeridos ---
+    // Si el servidor envió valores (monto/renta), los formateamos de inmediato
+    if (montoInput && montoInput.value) {
+        montoInput.value = formatNumber(montoInput.value);
+    }
+    if (rentaInput && rentaInput.value) {
+        rentaInput.value = formatNumber(rentaInput.value);
+    }
+    
+    // El RUT es mejor manejarlo desde el HTML con el atributo value="{{user.rut}}"
+    // Pero si quieres formatearlo al cargar:
+    if (rutInput && rutInput.value) {
+        rutInput.value = formatRUT(rutInput.value);
+    }
+
+    // --- 2. Configuración de fechas ---
     const minDate = new Date();
     const maxDate = new Date();
-    maxDate.setMonth(minDate.getMonth()+1);
+    maxDate.setMonth(minDate.getMonth() + 1);
 
-
-    const formatDate = (date) => {
-        return date.toISOString().substring(0, 10);
-    }
+    const formatDate = (date) => date.toISOString().substring(0, 10);
 
     fechaPrimerPago.min = formatDate(minDate);
     fechaPrimerPago.max = formatDate(maxDate);
-    
+
+    // --- 3. Listeners de entrada (Mantienen el cursor en su lugar) ---
     rutInput.addEventListener('input', function(e) {
         const cursorPosition = e.target.selectionStart;
         const oldLength = e.target.value.length;
         e.target.value = formatRUT(e.target.value);
-        const newLength = e.target.value.length;
-        const diff = newLength - oldLength;
+        const diff = e.target.value.length - oldLength;
         e.target.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
-        
         clearError('rut');
     });
-    
+
     montoInput.addEventListener('input', function(e) {
         const cursorPosition = e.target.selectionStart;
         const oldLength = e.target.value.length;
         e.target.value = formatNumber(e.target.value);
-        const newLength = e.target.value.length;
-        
-        const diff = newLength - oldLength;
+        const diff = e.target.value.length - oldLength;
         e.target.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
-        
         clearError('monto');
     });
-    
+
     rentaInput.addEventListener('input', function(e) {
         const cursorPosition = e.target.selectionStart;
         const oldLength = e.target.value.length;
         e.target.value = formatNumber(e.target.value);
-        const newLength = e.target.value.length;
-        
-        const diff = newLength - oldLength;
+        const diff = e.target.value.length - oldLength;
         e.target.setSelectionRange(cursorPosition + diff, cursorPosition + diff);
-        
         clearError('renta');
     });
-    
+
     document.getElementById('cuotas').addEventListener('input', () => clearError('cuotas'));
+
+    // --- 4. Envío del formulario ---
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (validateForm()) {
             const submitBtn = document.getElementById('submitBtn');
             
-
-            const montoInput = document.getElementById('monto');
-            const rentaInput = document.getElementById('renta');
-            
+            // "Limpiamos" los puntos antes de enviar para que el backend reciba Integers
             montoInput.value = montoInput.value.replace(/\./g, '');
             rentaInput.value = rentaInput.value.replace(/\./g, '');
 
             submitBtn.disabled = true;
-            submitBtn.textContent = 'PROCESANDO...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
             
-            // Quitamos el setTimeout para el submit real, o se enviará tarde
             form.submit();
         }
     });

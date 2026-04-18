@@ -369,45 +369,106 @@ app.get('/sim-results/restore', (req, res) => {
 
 //------------------------SIMULATOR------------------------
 
-app.get('/simulator', (req, res) => {
-  res.render('simulator', {
-    style: 'simulator.css', 
-    title: 'Simulador Crédito de Consumo', 
-    js: 'simulator.js', 
-    user: req.session.user || null})
-})
+app.get('/simulator', async (req, res) => {
+    // 1. Protección de ruta
+    if (!req.session.user) return res.redirect('/login');
 
-app.post('/simulation', (req, res) => {
-  const { rut, monto, renta, cuotas, fechaPrimerPago } = req.body;;
-  const _monto = parseNumber(monto);
-  const _cuotas = parseNumber(cuotas);
-  const _renta = parseNumber(renta);
-  var tasaInteres = monthlyInterestRate(_monto, _cuotas);
-  const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
-  const ctc = (_cuotas*cuotaMensual);
-  const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
-  const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
-  
-  req.session.lastInputs = {rut, monto, renta, cuotas, fechaPrimerPago}
-  res.render('sim-results', { 
-    style: 'sim-results.css', 
-    js: 'sim-results.js', 
-    title: 'Resultados Simulación', 
-    rut,
-    user: req.session.user || null,
-    renta: _renta,
-    monto: _monto, 
-    cuotas: _cuotas, 
-    tasaInteres: (tasaInteres*100),
-    cuotaMensual, 
-    ctc, 
-    cae: +cae.toFixed(2), 
-    creditScore,
-    fechaPrimerPago,
-    simulations: req.session.simulations
-  });
+    const client = await pool.connect();
+    try {
+        const rut = req.session.user.rut;
+
+        // 2. Buscar antecedentes del usuario (el más reciente)
+        const result = await client.query(
+            'SELECT sueldo_declarado FROM antecedentes WHERE rut_usuario = $1 ORDER BY fecha_ingreso DESC LIMIT 1', // <-- CAMBIADO AQUÍ
+            [rut]
+        );
+
+        // 3. Si no tiene antecedentes, mandarlo a completar info
+        if (result.rows.length === 0) {
+            return res.redirect('/creditinfo');
+        }
+
+        // 4. Si tiene, preparamos la sugerencia
+        const sueldo = parseInt(result.rows[0].sueldo_declarado);
+        
+        // Lógica: Sugerimos un crédito de 4 sueldos y 24 cuotas
+        // EN BASE A SUELDO, ACA PONER PARAMETROS, CALCULOS O CUALQUIER COSA RELACIONADA AL SCORING
+        const sugerido = {
+            monto: sueldo * 4,
+            cuotas: 24,
+            renta: sueldo
+        };
+
+        res.render('simulator', {
+            style: 'simulator.css',
+            js: 'simulator.js',
+            title: 'Simulador Crédito de Consumo',
+            user: req.session.user,
+            sugerido: sugerido // Pasamos el objeto a la vista
+        });
+
+    } catch (err) {
+        console.error("Error en el simulador:", err);
+        res.status(500).send("Error interno del servidor");
+    } finally {
+        client.release();
+    }
 });
 
+app.post('/simulation', async (req, res) => {
+    // 1. Extraemos los datos del body
+    const { rut, monto, cuotas, fechaPrimerPago } = req.body;
+    
+    // 2. Seguridad: En lugar de confiar en 'renta' del body, 
+    // la recuperamos de la base de datos o de la sesión si la guardaste ahí.
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            'SELECT sueldo_declarado FROM antecedentes WHERE rut_usuario = $1 ORDER BY fecha_ingreso DESC LIMIT 1',
+            [req.session.user.rut]
+        );
+
+        if (result.rows.length === 0) return res.redirect('/creditinfo');
+
+        const _renta = parseInt(result.rows[0].sueldo_declarado);
+        const _monto = parseNumber(monto);
+        const _cuotas = parseNumber(cuotas);
+
+        // 3. Cálculos financieros
+        const tasaInteres = monthlyInterestRate(_monto, _cuotas);
+        const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
+        const ctc = (_cuotas * cuotaMensual);
+        const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
+        const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
+        
+        // 4. Guardar inputs para persistencia
+        req.session.lastInputs = { rut, monto, renta: _renta, cuotas, fechaPrimerPago };
+
+        res.render('sim-results', { 
+            style: 'sim-results.css', 
+            js: 'sim-results.js', 
+            title: 'Resultados Simulación', 
+            rut: req.session.user.rut,
+            user: req.session.user,
+            renta: _renta,
+            monto: _monto, 
+            cuotas: _cuotas, 
+            tasaInteres: (tasaInteres * 100),
+            cuotaMensual, 
+            ctc, 
+            cae: +cae.toFixed(2), 
+            creditScore,
+            fechaPrimerPago,
+            simulations: req.session.simulations
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error al procesar la simulación");
+    } finally {
+        client.release();
+    }
+});
 
 
 //------------------------CREDIT INFO------------------------
@@ -440,64 +501,75 @@ app.get('/creditinfo', (req, res) => {
         user: req.session.user
     });
 });
-
-// RUTA POST: Recibir datos y archivos
-// .fields permite recibir múltiples archivos con nombres diferentes
-
 app.post('/creditinfo', upload.fields([
     { name: 'liquidacion', maxCount: 1 },
     { name: 'cotizaciones', maxCount: 1 }, 
     { name: 'carnet', maxCount: 1 }       
 ]), async (req, res) => {
-    // 1. Obtener cliente del pool antes del try
     const client = await pool.connect(); 
 
     try {
-        // Validación básica: Verificar que los 3 archivos llegaron
         if (!req.files || !req.files['liquidacion'] || !req.files['cotizaciones'] || !req.files['carnet']) {
             throw new Error('Debes subir los tres documentos solicitados.');
         }
 
         const { sueldo, antiguedad, deudas } = req.body;
-        const rut = req.session.user.rut;
+        const rut = req.session.user.rut.replace(/\./g, ''); // Quita los puntos, deja el guion si existe
 
         await client.query('BEGIN');
 
-        // 2. Iterar sobre los archivos subidos
-        // Ajustado a tu tabla 'documento' que NO tiene id_solicitud
+        const idsDocs = {};
+
+        // 1. Inserción de documentos (Mantiene tu lógica original)
         for (const fieldName in req.files) {
             const file = req.files[fieldName][0];
-            const queryText = `
+            const resDoc = await client.query(`
                 INSERT INTO documento (rut_usuario, tipo_documento, nombre_original, nombre_sistema, ruta_archivo)
-                VALUES ($1, $2, $3, $4, $5)
-            `;
-            const values = [
-                rut, 
-                fieldName, 
-                file.originalname, 
-                file.filename, 
-                file.path
-            ];
-            await client.query(queryText, values);
+                VALUES ($1, $2, $3, $4, $5) RETURNING id_documento
+            `, [rut, fieldName, file.originalname, file.filename, file.path]);
+            
+            idsDocs[fieldName] = resDoc.rows[0].id_documento;
         }
 
+        // 2. Limpieza segura de datos (Sanitización)
+        // Convertimos a String primero para evitar errores si llega un número puro
+        const sueldoLimpio = String(sueldo || "0").replace(/\D/g, "");
+        const deudasLimpias = String(deudas || "0").replace(/\D/g, "");
+        const antiguedadLimpia = parseInt(antiguedad) || 0;
+
+        // 3. Inserción en antecedentes
+        const queryAntecedentes = `
+            INSERT INTO antecedentes 
+            (rut_usuario, sueldo_declarado, antiguedad_laboral, deudas_totales, id_doc_liquidacion, id_doc_cotizaciones, id_doc_carnet)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+        `;
+        
+        const valuesAntecedentes = [
+            rut,
+            parseInt(sueldoLimpio),
+            antiguedadLimpia,
+            parseInt(deudasLimpias),
+            idsDocs['liquidacion'],
+            idsDocs['cotizaciones'],
+            idsDocs['carnet']
+        ];
+
+        await client.query(queryAntecedentes, valuesAntecedentes);
         await client.query('COMMIT');
+
         res.redirect('/simulator');
 
     } catch (err) {
-        // Solo hacemos ROLLBACK si la transacción llegó a empezar
-        try { await client.query('ROLLBACK'); } catch (e) { /* ignore */ }
-        
-        console.error(err);
+        try { await client.query('ROLLBACK'); } catch (e) {}
+        console.error("Error en creditinfo:", err);
         res.render('creditinfo', {
             style: 'creditinfo.css',
             js: 'creditinfo.js',
             title: 'Información Crediticia',
             user: req.session.user || null,
-            error: err.message || 'Hubo un error al subir los archivos.'
+            error: err.message || 'Hubo un error al procesar la información.'
         });
     } finally {
-        // 3. Liberar el cliente siempre
         client.release();
     }
 });
