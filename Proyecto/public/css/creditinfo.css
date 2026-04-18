@@ -1,7 +1,5 @@
-/* Importamos todo lo de login para mantener consistencia */
 @import 'login.css';
 
-/* Ajuste específico para que los inputs de archivo se vean limpios */
 input[type="file"] {
     padding: 0.5rem;
     font-size: 0.9rem;

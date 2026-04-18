@@ -38,6 +38,8 @@ docker compose build --no-cache y luego docker-compose up
 
 10. Ir a http://localhost:3000/ para acceder a la vista de Login
 
+11. Ir a http://localhost:3000/creditinfo para acceder al formulario de informacion crediticia HU:009
+
 (para detener los contenedores)  
 docker compose down -v
 

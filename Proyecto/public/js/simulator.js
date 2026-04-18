@@ -59,7 +59,7 @@ var isValid = true;
 
     const rentaClean = rentaRaw.replace(/\./g, '');
 
-    if (!rentaClean) { // Usamos la variable limpia
+    if (!rentaClean) {
         showError('renta', 'La renta es requerida');
         isValid = false;
     } else {
@@ -94,8 +94,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const rentaInput = document.getElementById('renta');
     const fechaPrimerPago = document.getElementById('fechaPrimerPago');
 
-    // --- 1. Formateo inicial de valores sugeridos ---
-    // Si el servidor envió valores (monto/renta), los formateamos de inmediato
     if (montoInput && montoInput.value) {
         montoInput.value = formatNumber(montoInput.value);
     }
@@ -103,13 +101,10 @@ document.addEventListener('DOMContentLoaded', function() {
         rentaInput.value = formatNumber(rentaInput.value);
     }
     
-    // El RUT es mejor manejarlo desde el HTML con el atributo value="{{user.rut}}"
-    // Pero si quieres formatearlo al cargar:
     if (rutInput && rutInput.value) {
         rutInput.value = formatRUT(rutInput.value);
     }
 
-    // --- 2. Configuración de fechas ---
     const minDate = new Date();
     const maxDate = new Date();
     maxDate.setMonth(minDate.getMonth() + 1);
@@ -119,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function() {
     fechaPrimerPago.min = formatDate(minDate);
     fechaPrimerPago.max = formatDate(maxDate);
 
-    // --- 3. Listeners de entrada (Mantienen el cursor en su lugar) ---
     rutInput.addEventListener('input', function(e) {
         const cursorPosition = e.target.selectionStart;
         const oldLength = e.target.value.length;
@@ -149,14 +143,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('cuotas').addEventListener('input', () => clearError('cuotas'));
 
-    // --- 4. Envío del formulario ---
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         
         if (validateForm()) {
             const submitBtn = document.getElementById('submitBtn');
             
-            // "Limpiamos" los puntos antes de enviar para que el backend reciba Integers
             montoInput.value = montoInput.value.replace(/\./g, '');
             rentaInput.value = rentaInput.value.replace(/\./g, '');
 

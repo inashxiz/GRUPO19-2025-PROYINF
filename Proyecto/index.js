@@ -209,25 +209,20 @@ app.post('/login', async (req, res) => { //hecho muy a la rápida, posiblemente 
 
 //------------------------REGISTRO------------------------ 
 
-// RUTA GET: Muestra el formulario de registro al usuario
+
 app.get('/register', (req, res) => {
     res.render('register', {
         title: 'Crear Cuenta',
         error: null
-        // No pasamos "js" ni "style" porque ya los pusiste fijos en el HTML que me mostraste
     });
 });
 
-// RUTA POST: Recibe los datos del formulario y los guarda en Postgres
 app.post('/register', async (req, res) => {
-    // Extraemos los datos del formulario (req.body)
 
     let { nombre, rut, password } = req.body;
 
     const rutLimpio = rut.replace(/\./g, '').trim();
     
-    // Como tu formulario actual no tiene campo "email", 
-    // definimos uno por defecto para que la DB no de error si es NOT NULL.
     const email = `${rutLimpio}@example.cl`;
 
     try {
@@ -240,8 +235,7 @@ app.post('/register', async (req, res) => {
         res.redirect('/login');
     } catch (err) {
         console.error("Error en el registro:", err.message);
-        
-        // Manejo de errores estilo Django: si el RUT ya existe
+
         res.render('register', {
             title: 'Crear Cuenta',
             error: 'El RUT ya está registrado en nuestro sistema.'
@@ -370,28 +364,23 @@ app.get('/sim-results/restore', (req, res) => {
 //------------------------SIMULATOR------------------------
 
 app.get('/simulator', async (req, res) => {
-    // 1. Protección de ruta
     if (!req.session.user) return res.redirect('/login');
 
     const client = await pool.connect();
     try {
         const rut = req.session.user.rut;
 
-        // 2. Buscar antecedentes del usuario (el más reciente)
         const result = await client.query(
-            'SELECT sueldo_declarado FROM antecedentes WHERE rut_usuario = $1 ORDER BY fecha_ingreso DESC LIMIT 1', // <-- CAMBIADO AQUÍ
+            'SELECT sueldo_declarado FROM antecedentes WHERE rut_usuario = $1 ORDER BY fecha_ingreso DESC LIMIT 1', 
             [rut]
         );
 
-        // 3. Si no tiene antecedentes, mandarlo a completar info
         if (result.rows.length === 0) {
             return res.redirect('/creditinfo');
         }
 
-        // 4. Si tiene, preparamos la sugerencia
         const sueldo = parseInt(result.rows[0].sueldo_declarado);
         
-        // Lógica: Sugerimos un crédito de 4 sueldos y 24 cuotas
         // EN BASE A SUELDO, ACA PONER PARAMETROS, CALCULOS O CUALQUIER COSA RELACIONADA AL SCORING
         const sugerido = {
             monto: sueldo * 4,
@@ -404,7 +393,7 @@ app.get('/simulator', async (req, res) => {
             js: 'simulator.js',
             title: 'Simulador Crédito de Consumo',
             user: req.session.user,
-            sugerido: sugerido // Pasamos el objeto a la vista
+            sugerido: sugerido
         });
 
     } catch (err) {
@@ -416,11 +405,8 @@ app.get('/simulator', async (req, res) => {
 });
 
 app.post('/simulation', async (req, res) => {
-    // 1. Extraemos los datos del body
     const { rut, monto, cuotas, fechaPrimerPago } = req.body;
     
-    // 2. Seguridad: En lugar de confiar en 'renta' del body, 
-    // la recuperamos de la base de datos o de la sesión si la guardaste ahí.
     const client = await pool.connect();
     try {
         const result = await client.query(
@@ -434,14 +420,12 @@ app.post('/simulation', async (req, res) => {
         const _monto = parseNumber(monto);
         const _cuotas = parseNumber(cuotas);
 
-        // 3. Cálculos financieros
         const tasaInteres = monthlyInterestRate(_monto, _cuotas);
         const cuotaMensual = monthlyCuota(_monto, _cuotas, tasaInteres);
         const ctc = (_cuotas * cuotaMensual);
         const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
         const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
         
-        // 4. Guardar inputs para persistencia
         req.session.lastInputs = { rut, monto, renta: _renta, cuotas, fechaPrimerPago };
 
         res.render('sim-results', { 
@@ -482,16 +466,13 @@ const storage = multer.diskStorage({
         const rut = req.session.user.rut.replace(/\./g, '').replace(/-/g, '');
         const timestamp = Date.now();
         const extension = file.originalname.split('.').pop();
-        // Resultado: 18555444k-carnet-1713387300.jpg
         cb(null, `${rut}-${file.fieldname}-${timestamp}.${extension}`);
     }
 });
 
 const upload = multer({ storage: storage });
 
-// RUTA GET: Mostrar el formulario
 app.get('/creditinfo', (req, res) => {
-    // Verificamos si el usuario está logueado (como en Django login_required)
     if (!req.session.user) return res.redirect('/login');
     
     res.render('creditinfo', {
@@ -514,13 +495,12 @@ app.post('/creditinfo', upload.fields([
         }
 
         const { sueldo, antiguedad, deudas } = req.body;
-        const rut = req.session.user.rut.replace(/\./g, ''); // Quita los puntos, deja el guion si existe
+        const rut = req.session.user.rut.replace(/\./g, '');
 
         await client.query('BEGIN');
 
         const idsDocs = {};
 
-        // 1. Inserción de documentos (Mantiene tu lógica original)
         for (const fieldName in req.files) {
             const file = req.files[fieldName][0];
             const resDoc = await client.query(`
@@ -531,13 +511,11 @@ app.post('/creditinfo', upload.fields([
             idsDocs[fieldName] = resDoc.rows[0].id_documento;
         }
 
-        // 2. Limpieza segura de datos (Sanitización)
-        // Convertimos a String primero para evitar errores si llega un número puro
+
         const sueldoLimpio = String(sueldo || "0").replace(/\D/g, "");
         const deudasLimpias = String(deudas || "0").replace(/\D/g, "");
         const antiguedadLimpia = parseInt(antiguedad) || 0;
 
-        // 3. Inserción en antecedentes
         const queryAntecedentes = `
             INSERT INTO antecedentes 
             (rut_usuario, sueldo_declarado, antiguedad_laboral, deudas_totales, id_doc_liquidacion, id_doc_cotizaciones, id_doc_carnet)

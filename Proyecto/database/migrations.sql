@@ -24,17 +24,16 @@ CREATE TABLE IF NOT EXISTS prestamos (
 );
 CREATE TABLE IF NOT EXISTS documento (
     id_documento SERIAL PRIMARY KEY,
-    rut_usuario VARCHAR(10) NOT NULL, -- Para saber de quién es sin saltar de tabla
-    tipo_documento VARCHAR(50) NOT NULL, -- 'liquidacion', 'cotizaciones', 'carnet'
-    nombre_original TEXT NOT NULL, -- Ejemplo: "mi_foto.jpg"
-    nombre_sistema TEXT NOT NULL, -- Ejemplo: "12345678k-carnet-1713387300.jpg"
+    rut_usuario VARCHAR(10) NOT NULL,
+    tipo_documento VARCHAR(50) NOT NULL,
+    nombre_original TEXT NOT NULL,
+    nombre_sistema TEXT NOT NULL,
     ruta_archivo TEXT NOT NULL, 
     metodo_ingreso VARCHAR(20) DEFAULT 'Manual',
     datos_capturados_ocr JSONB,
     estado_validacion VARCHAR(30) DEFAULT 'Pendiente',
     fecha_carga TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
-    -- Foreign key (ajustar según el nombre de tu tabla de solicitudes)
+
     CONSTRAINT fk_rut FOREIGN KEY (rut_usuario) REFERENCES users(rut) ON DELETE CASCADE
 );
 
@@ -42,19 +41,16 @@ CREATE TABLE IF NOT EXISTS antecedentes (
     id_antecedente SERIAL PRIMARY KEY,
     rut_usuario VARCHAR(12) NOT NULL,
     
-    -- Información declarada en el formulario creditinfo
     sueldo_declarado BIGINT NOT NULL,
     antiguedad_laboral INTEGER NOT NULL,
     deudas_totales BIGINT NOT NULL,
     
-    -- Referencias a los documentos específicos que respaldan esta info
     id_doc_liquidacion INTEGER REFERENCES documento(id_documento),
     id_doc_cotizaciones INTEGER REFERENCES documento(id_documento),
     id_doc_carnet INTEGER REFERENCES documento(id_documento),
     
     fecha_ingreso TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Relación con la tabla de usuarios
     CONSTRAINT fk_user_antecedentes FOREIGN KEY (rut_usuario) REFERENCES users(rut) ON DELETE CASCADE
 );
 

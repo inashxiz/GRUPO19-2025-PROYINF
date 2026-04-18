@@ -143,11 +143,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var cuotaMensual = document.getElementById('cuotaMensual').textContent.trim();
     var ctc = document.getElementById('ctc').textContent.trim();
     
-    // 1. Corregimos la captura de tasas para asegurar 2 decimales
     var tasaInteresRaw = parseFloat(document.getElementById('tasaInteres').textContent.replace(',', '.'));
     var caeRaw = parseFloat(document.getElementById('cae').textContent.replace(',', '.'));
-    
-    // --- FORMATEO DEL HISTORIAL ---
+
     document.querySelectorAll('.format-history').forEach(el => {
         const num = el.textContent.trim();
         if (num) {
@@ -155,18 +153,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // 2. Aplicamos formato de dinero a los montos principales
     document.getElementById('monto').textContent = '$' + formatNumber(monto);
     document.getElementById('cuotaMensual').textContent = '$' + formatNumber(cuotaMensual);
     document.getElementById('ctc').textContent = '$' + formatNumber(ctc);
 
-    // 3. Formateamos a 2 decimales (Eliminé las líneas redundantes que sobreescribían esto)
     document.getElementById('tasaInteres').textContent = tasaInteresRaw.toFixed(2).replace('.', ',') + '%';
     document.getElementById('cae').textContent = caeRaw.toFixed(2).replace('.', ',') + '%';
 
-    // 4. Formateo de montos en el Historial (busca elementos con clase 'history-amount')
     document.querySelectorAll('.history-amount').forEach(el => {
-        let valor = el.textContent.trim().replace(/\D/g, ''); // Deja solo números
+        let valor = el.textContent.trim().replace(/\D/g, '');
         el.textContent = '$' + formatNumber(valor);
     });
 
@@ -200,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             submitBtn.textContent = 'PROCESANDO...';
             
-            // Limpiamos los puntos antes de enviar al backend
             amountInput.value = amountInput.value.replace(/\./g, '');
             
             form.submit();
