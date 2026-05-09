@@ -188,6 +188,14 @@ app.get('/login', (req, res) => {
 app.post('/login', async (req, res) => { //hecho muy a la rápida, posiblemente la cague pero está bien manejado el redirect para el caso que me importaba
 
     let { rut, password } = req.body;
+
+    // VALIDACIÓN DE SEGURIDAD
+    if (!rut || typeof rut !== 'string') {
+        return res.status(400).render('login', {
+            style: 'login.css', js: 'login.js', title: 'Iniciar Sesión',
+            error: 'Formato de RUT inválido.'
+        });
+    }
     const rutLimpio = rut.replace(/\./g, '').trim();
     
     const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rutLimpio]);
