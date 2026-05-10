@@ -1,0 +1,3 @@
+Este archivo es meramente para que la carpeta uploads se suba al repositorio.
+Como el .gitignore impide que los archivos dentro de ella se suban al repositorio, git lo toma como una carpeta vacía, por lo que tampoco la sube.
+Esto causa errores en la view creditinfo, pues necesita que la carpeta uploads exista para hacer el INSERT en la base de datos.

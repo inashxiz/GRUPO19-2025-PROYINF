@@ -1,1 +1,3 @@
-uploads/*
+uploads/*.pdf
+uploads/*.jpg
+uploads/*.png
