@@ -1,3 +1,8 @@
 uploads/*.pdf
 uploads/*.jpg
 uploads/*.png
+
+
+venv/
+.venv/
+env/
