@@ -1,19 +1,22 @@
 const express = require('express');
 const PDFDocument = require('pdfkit');
 const { engine } = require('express-handlebars');
-const session = require('express-session')
-const pool = require('./database/db');
+const session = require('express-session');
+const pool = require('./database/db'); // Importar la conexión
 const { redirect } = require('express/lib/response');
 const { user } = require('pg/lib/defaults.js');
+const multer = require('multer');
 const app = express();
 const port = 3000;
 
+//------------------------HANDLEBARS-SET-UP------------------------ 
 
 app.engine('handlebars', engine({
   extname: 'handlebars',
   defaultLayout: 'main',
   layoutsDir: './views/layouts/'
 }));
+
 app.set('view engine', 'handlebars');
 app.set('views', './views');
 
@@ -21,22 +24,23 @@ app.use(session ({
   secret: 'supermegagigachadsecretuser',
   resave: false,
   saveUninitialized: true,
-  cookie: {maxAge: 1000*60*30} //Sesión de 'Guest' dura 30 minutos
-}));
+  cookie: {maxAge: 1000*60*30} // Sesión de 'Guest' dura 30 minutos
+}))
+
 app.use((req, res, next) => {
-  if (!req.session.simulations) req.session.simulations = [];
+  if(!req.session.simulations) req.session.simulations = [];
   next();
 });
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
 app.post('/session/pending-sim', (req, res) => {
-    req.session.pendingSimulation = req.body;
-    req.session.save((err) => {
-        if (err) return res.status(500).json({ ok: false });
-        res.json({ ok: true });
-    });
+  req.session.pendingSimulation = req.body;
+  req.session.save((err) => {
+    if (err) return res.status(500).json({ ok: false });
+  });
 });
 
 app.listen(port, () => {
@@ -46,7 +50,7 @@ app.listen(port, () => {
 //------------------------HELPER-FUNCTIONS------------------------
 
 function parseNumber(str){
-  if(typeof str !== 'string') return NaN;
+  if (typeof str != 'string') return NaN;
   var s = str.trim();
   s = s.replace(/\./g, '');
   s = s.replace(/\,/g, '');
@@ -57,13 +61,13 @@ function parseNumber(str){
 function monthlyInterestRate(monto, cuotas){
   /*
   -----NOTA-----
-  usé las tasas, rango de montos y rango de cuotas del banco BCI, así que pueden cambiar en el futuro
+  Usé las tasas, rango de montos y rango de cuotas del banco BCI, así que pueden cambiar en el futuro
   para modificar las tasas simplemente hay que modificar esta función.
   OJO!
     - el mínimo de cuotas es 6 y el máximo 60
     - el monto mínimo que se puede ingresar es $500.000
   */
-  if (monto >= 500000 && monto <= 2999999){
+ if (monto >= 500000 && monto <= 2999999){
     if (cuotas >= 6 && cuotas <= 35) return 0.0219;
     else return 0.0217;
   } else if (monto >= 3000000 && monto <= 6999999){
@@ -115,10 +119,15 @@ function simulateCAE(monto, cuotaMensual, cuotas){
 }
 
 function calculateLoanScore(monthlyFee, monthlyIncome, totalLoanAmount, duration) {
-  /* Calcula score entre 0 a 100 basándose en el ratio de cuota/ingreso mensual,
-  monto total/ingreso anual, y duración del préstamo. Falta tomar en cuenta el historial,
-  pero como todavía no lo implementamos no se puede hacer mucho */
+  /* 
+  -----NOTA-----
+  Calcula score entre 0 a 100 basándose en el ratio de cuota/ingreso mensual,
+  monto total/ingreso anual, y duración del préstamo. 
+  Falta tomar en cuenta el historial, pero como todavía no lo implementamos 
+  no se puede hacer mucho 
+  */
     let score = 100;
+    if(monthlyFee >= monthlyIncome) score -= 100;
     const debtToIncome = (monthlyFee / monthlyIncome) * 100;
     if (debtToIncome > 50) score -= 30;
     else if (debtToIncome > 40) score -= 20;
@@ -130,13 +139,16 @@ function calculateLoanScore(monthlyFee, monthlyIncome, totalLoanAmount, duration
     else if (loanToAnnualIncome > 3) score -= 8;
     if (duration >= 60) score -= 10;
     else if (duration > 48) score -= 7;
-    else if (duration > 36) score -= 3; //créditos a menos de 36 meses no imponen penalización 
+    else if (duration > 36) score -= 3; //Créditos a menos de 36 meses no imponen penalización 
   
-  /* !!!!!!!!!!!!Cuando esté implementado el historial de pagos, aquí hay que poner una 
+  /*
+  -----NOTA-----
+  Cuando esté implementado el historial de pagos, aquí hay que poner una 
   4ta condición para restarle. Esta debería ser la que más peso tenga, así que
-  tendríamos que reajustar los números de las primeras 3 también. */
-  
-    return Math.max(0, Math.min(100, Math.round(score))); //para que sea un int
+  tendríamos que reajustar los números de las primeras 3 también.
+  */
+
+    return Math.max(0, Math.min(100, Math.round(score))); //Para que sea un int
 }
 
 function buildSimulationSnapshot({rut, renta, monto, cuotas, fechaPrimerPago}){
@@ -185,17 +197,9 @@ app.get('/login', (req, res) => {
     });
 });
 
-app.post('/login', async (req, res) => { //hecho muy a la rápida, posiblemente la cague pero está bien manejado el redirect para el caso que me importaba
+app.post('/login', async (req, res) => { 
 
     let { rut, password } = req.body;
-
-    // VALIDACIÓN DE SEGURIDAD
-    if (!rut || typeof rut !== 'string') {
-        return res.status(400).render('login', {
-            style: 'login.css', js: 'login.js', title: 'Iniciar Sesión',
-            error: 'Formato de RUT inválido.'
-        });
-    }
     const rutLimpio = rut.replace(/\./g, '').trim();
     
     const result = await pool.query('SELECT * FROM users WHERE rut = $1', [rutLimpio]);
@@ -209,14 +213,13 @@ app.post('/login', async (req, res) => { //hecho muy a la rápida, posiblemente 
         });
     }
     req.session.user = { rut: user.rut };
-    if (req.session.pendingSimulation) { //para cuando vuelvo del sim-results
+    if (req.session.pendingSimulation) { //Para volver a sim-results 
         return res.redirect('/sim-results/restore');
     }
-    return res.redirect('/simulator'); //para cuando estoy simplemente iniciando sesión desde cero
+    return res.redirect('/simulator'); //Cuando estoy iniciando sesión "desde cero"
 });
 
 //------------------------REGISTRO------------------------ 
-
 
 app.get('/register', (req, res) => {
     res.render('register', {
@@ -228,9 +231,7 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
 
     let { nombre, rut, password } = req.body;
-
     const rutLimpio = rut.replace(/\./g, '').trim();
-    
     const email = `${rutLimpio}@example.cl`;
 
     try {
@@ -250,8 +251,10 @@ app.post('/register', async (req, res) => {
         });
     }
 });
+
 //------------------------SIM-RESULTS------------------------
 
+// Guardar simulación temporalmente
 app.post('/history/save', (req, res) => {
   try{
     const {rut, renta, monto, cuotas, fechaPrimerPago} = req.body;
@@ -280,6 +283,7 @@ app.post('/history/save', (req, res) => {
   }
 })
 
+
 app.post('/history', (req, res) =>{
   req.session.simulations = [];
   const {rut, renta, monto, cuotas, fechaPrimerPago} = req.body;
@@ -291,6 +295,7 @@ app.post('/history', (req, res) =>{
     });
 })
 
+// Cargar historial de usuario
 app.post('/history/load', (req, res) => {
   const { id } = req.body;
   const sim = req.session.simulations.find(s => s.id === id);
@@ -313,6 +318,7 @@ app.post('/history/load', (req, res) => {
   });
 });
 
+// Recalcular simulación
 app.post('/recalculate', (req, res) => {
     const {rut, renta, monto, cuotas} = req.body;
     const _monto = parseNumber(monto);
@@ -325,30 +331,60 @@ app.post('/recalculate', (req, res) => {
     const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
     const fechaPrimerPago = req.session.lastInputs?.fechaPrimerPago;
 
+    // Dependiendo de si el usuario pasa o no la evaluación de riesgo, se actualiza la simulación
+    if(creditScore >= 50){
+            req.session.lastInputs = { rut, monto: _monto, renta: _renta, cuotas: _cuotas, fechaPrimerPago };
 
-  
-res.render('sim-results', { 
-    style: 'sim-results.css', 
-    js: 'sim-results.js', 
-    title: 'Resultados Simulación',
-    user: req.session.user || null,
-    rut,
-    renta: _renta, 
-    monto: _monto, 
-    cuotas: _cuotas, 
-    tasaInteres: (tasaInteres*100), 
-    cuotaMensual, 
-    ctc, 
-    cae: +cae.toFixed(2),
-    creditScore,
-    fechaPrimerPago,
-    simulations: req.session.simulations});
-})
+            res.render('sim-results', { 
+            style: 'sim-results.css', 
+            js: 'sim-results.js', 
+            title: 'Resultados Simulación', 
+            user: req.session.user || null,
+            rut,
+            renta: _renta, 
+            monto: _monto, 
+            cuotas: _cuotas, 
+            tasaInteres: (tasaInteres*100), 
+            cuotaMensual, 
+            ctc, 
+            cae: +cae.toFixed(2),
+            creditScore,
+            fechaPrimerPago,
+            simulations: req.session.simulations});
+        } else {
+            tasaInteres = monthlyInterestRate(req.session.lastInputs.monto, req.session.lastInputs.cuotas);
+            const lastMonthlyFee  = monthlyCuota(req.session.lastInputs.monto, req.session.lastInputs.cuotas, tasaInteres);
+            const lastctc = (req.session.lastInputs.cuotas*lastMonthlyFee);
+            const lastcae = simulateCAE(req.session.lastInputs.monto, lastMonthlyFee, req.session.lastInputs.cuotas);
+            res.render('sim-results', { 
+                style: 'sim-results.css', 
+                js: 'sim-results.js', 
+                title: 'Resultados Simulación', 
+                user: req.session.user || null,
+                rut, 
+                renta: req.session.lastInputs.renta,
+                monto: req.session.lastInputs.monto,
+                cuotas: req.session.lastInputs.cuotas,
+                tasaInteres: tasaInteres,
+                cuotaMensual: lastMonthlyFee,
+                ctc: lastctc,
+                cae: lastcae,
+                fechaPrimerPago: req.session.lastInputs.fechaPrimerPago,
+                rejected: true,
+                error: '¡Lo sentimos! La puntuación de la simulación no es suficiente para ser aprobada como una solicitud real.',
+                simulations: req.session.simulations
+            });
+        }
+  });
 
 app.get('/sim-results/restore', (req, res) => {
     const sim = req.session.pendingSimulation;
     if (!sim) return res.redirect('/simulator');
-    delete req.session.pendingSimulation; //no funcionaba bien hasta que empecé a borrar esto, ni idea de por qué pero supongo que es importante hacerlo????
+    /*
+    -----NOTA-----
+    Sistema no funcionaba si no se eliminaban las pending simulations, por alguna razón
+    */
+    delete req.session.pendingSimulation;
     const snap = buildSimulationSnapshot(sim);
     res.render('sim-results', {
         style: 'sim-results.css',
@@ -377,7 +413,6 @@ app.get('/simulator', async (req, res) => {
     const client = await pool.connect();
     try {
         const rut = req.session.user.rut;
-
         const result = await client.query(
             'SELECT sueldo_declarado FROM antecedentes WHERE rut_usuario = $1 ORDER BY fecha_ingreso DESC LIMIT 1', 
             [rut]
@@ -389,10 +424,15 @@ app.get('/simulator', async (req, res) => {
 
         const sueldo = parseInt(result.rows[0].sueldo_declarado);
         
-        // EN BASE A SUELDO, ACA PONER PARAMETROS, CALCULOS O CUALQUIER COSA RELACIONADA AL SCORING
+        /*
+        -----NOTA-----
+        En estos momentos, la simulación sugerida funciona en base al sueldo.
+        Hay que implementar los cálculos, parámetros o cualquier cosa relacionada
+        al scoring.
+        */
         const sugerido = {
             monto: sueldo * 4,
-            cuotas: 24,
+            cuotas: Math.round((sueldo*4)/(0.2*sueldo)), // Número Cuotas es tal que siempre sea el 20% del sueldo
             renta: sueldo
         };
 
@@ -401,6 +441,8 @@ app.get('/simulator', async (req, res) => {
             js: 'simulator.js',
             title: 'Simulador Crédito de Consumo',
             user: req.session.user,
+            rejected: false,
+            error: "",
             sugerido: sugerido
         });
 
@@ -411,6 +453,7 @@ app.get('/simulator', async (req, res) => {
         client.release();
     }
 });
+
 
 app.post('/simulation', async (req, res) => {
     const { rut, monto, cuotas, fechaPrimerPago } = req.body;
@@ -434,25 +477,38 @@ app.post('/simulation', async (req, res) => {
         const cae = simulateCAE(_monto, cuotaMensual, _cuotas);
         const creditScore = calculateLoanScore(cuotaMensual, _renta, _monto, _cuotas);
         
-        req.session.lastInputs = { rut, monto, renta: _renta, cuotas, fechaPrimerPago };
+        // Dependiendo de si el usuario pasa o no la evaluación de riesgo, se lleva a cabo la simulación
+        if(creditScore >= 50){
+            req.session.lastInputs = { rut, monto: _monto, renta: _renta, cuotas: _cuotas, fechaPrimerPago };
 
-        res.render('sim-results', { 
-            style: 'sim-results.css', 
-            js: 'sim-results.js', 
-            title: 'Resultados Simulación', 
-            rut: req.session.user.rut,
-            user: req.session.user,
-            renta: _renta,
-            monto: _monto, 
-            cuotas: _cuotas, 
-            tasaInteres: (tasaInteres * 100),
-            cuotaMensual, 
-            ctc, 
-            cae: +cae.toFixed(2), 
-            creditScore,
-            fechaPrimerPago,
-            simulations: req.session.simulations
-        });
+            res.render('sim-results', { 
+                style: 'sim-results.css', 
+                js: 'sim-results.js', 
+                title: 'Resultados Simulación', 
+                rut: req.session.user.rut,
+                user: req.session.user,
+                renta: _renta,
+                monto: _monto, 
+                cuotas: _cuotas, 
+                tasaInteres: (tasaInteres * 100),
+                cuotaMensual, 
+                ctc, 
+                cae: +cae.toFixed(2), 
+                creditScore,
+                fechaPrimerPago,
+                simulations: req.session.simulations
+            });
+        } else {
+            res.render('simulator', { 
+                style: 'simulator.css', 
+                js: 'simulator.js', 
+                title: 'Simulador Crédito de Consumo', 
+                user: req.session.user,
+                rejected: true,
+                error: '¡Lo sentimos! La puntuación de la simulación no es suficiente para ser aprobada como una solicitud real.',
+                simulations: req.session.simulations
+            });
+        }
 
     } catch (err) {
         console.error(err);
@@ -462,9 +518,7 @@ app.post('/simulation', async (req, res) => {
     }
 });
 
-
-//------------------------CREDIT INFO------------------------
-const multer = require('multer');
+//------------------------CREDIT-INFO------------------------
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -480,6 +534,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+
 app.get('/creditinfo', (req, res) => {
     if (!req.session.user) return res.redirect('/login');
     
@@ -490,6 +545,7 @@ app.get('/creditinfo', (req, res) => {
         user: req.session.user
     });
 });
+
 app.post('/creditinfo', upload.fields([
     { name: 'liquidacion', maxCount: 1 },
     { name: 'cotizaciones', maxCount: 1 }, 

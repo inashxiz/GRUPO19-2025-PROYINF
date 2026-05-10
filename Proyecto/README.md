@@ -17,39 +17,29 @@ Ejecutar en terminal:
 1. Deben navegar hasta la carpeta GRUPO19-2025-PROYINF/Proyecto
 
 2. (les instalará las dependencias se suele demorar un poco la primera vez con esto levantan el proyecto)  
-docker compose build --no-cache y luego docker-compose up
-
-3. Crear las tablas con Powershell: "Get-Content database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
-                               WSL: "cat database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
-                               cmd: "type database\migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
-
-
-4. Ir a http://localhost:3000/simulator para acceder a la HU:005 Simulación de Préstamo
-
-5. Ir a http://localhost:3000/solicitud para acceder a la HU:002 Solicitud de Préstamo
-
-6. Ir a http://localhost:3000/debts para acceder a la HU:006 Gestión de Deudas
-
-7. Ir a http://localhost:3000/payment para acceder a la HU:003 Registro de Pagos
-
-8. Ir a http://localhost:3000/contrato para acceder a la HU:007 Generación de Contrato
-
-9. Ir a http://localhost:3000/desembolso para acceder a la HU:004 Desembolso del Préstamo
-
-10. Ir a http://localhost:3000/ para acceder a la vista de Login
-
-11. Ir a http://localhost:3000/creditinfo para acceder al formulario de informacion crediticia HU:009
+docker compose up --build
 
 (para detener los contenedores)  
 docker compose down -v
 
-si no les ejecuta asegurense de estar en la carpeta correcta  
-si trabajan desde windows deben tener instalado WSL2 y tenerlo activado en docker desktop  
-esto se puede verificar en  
+Si no les ejecuta asegurense de estar en la carpeta correcta.  
+Si trabajan desde windows deben tener instalado WSL2 y tenerlo activado en docker desktop.  
+Esto se puede verificar en:
 Configuración   
 -Resources  
   -Configure which WSL 2 distros you want to access Docker from. (esto debe estar activo)  
   -Enable integration with additional distros:(esto debe estar activo)  
+
+## 2. Ejecutar proyecto
+Crear las tablas con Powershell: "Get-Content database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb" 
+
+WSL: "cat database/migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb" 
+
+cmd: "type database\migrations.sql | docker exec -i proyecto-postgres_db-1 psql -U user -d mydb"
+
+Con Docker Desktop abierto, ejecutar ```docker compose up```.
+
+Acceder a http://localhost:3000/ para entrar a la página.
 
 # Comandos útiles 
 

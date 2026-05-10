@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS prestamos (
-  id SERIAL PRIMARY KEY,
+  id SERIAL,
   user_id INTEGER REFERENCES users(id),
   rut VARCHAR(10) NOT NULL,
   monto BIGINT NOT NULL,
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS prestamos (
   ctc BIGINT,
   cae DECIMAL(5,2),
   created_at TIMESTAMP DEFAULT now()
+  PRIMARY KEY (id, user_id)
 );
 CREATE TABLE IF NOT EXISTS documento (
     id_documento SERIAL PRIMARY KEY,
@@ -59,12 +60,12 @@ CREATE INDEX IF NOT EXISTS idx_prestamos_rut ON prestamos(rut);
 CREATE INDEX IF NOT EXISTS idx_users_rut ON users(rut);
 CREATE INDEX IF NOT EXISTS idx_antecedentes_rut ON antecedentes(rut_usuario);
 
---user de prueba
+-- User de prueba
 INSERT INTO users (rut, password, nombre, email) 
 VALUES (' ', '12345', 'usuario_test', 'test@usm.cl')
 ON CONFLICT (rut) DO NOTHING;
 
---prueba
+-- Prueba
 INSERT INTO users (rut, password, nombre, email) VALUES
 ('11111111-1', 'pass1', 'Ana Torres', 'ana.torres@example.com'),
 ('22222222-2', 'pass2', 'Luis Ramírez', 'luis.ramirez@example.com'),

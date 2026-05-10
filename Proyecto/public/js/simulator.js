@@ -53,10 +53,18 @@ function validateForm() {
 var isValid = true;
     ['rut', 'monto', 'renta', 'cuotas', 'fechaPrimerPago'].forEach(clearError);
     
+    const monto = document.getElementById('monto').value;
+    const montoClean = monto.replace(/\./g, '');
+    const montoNumber = parseInt(montoClean);
+    if (!monto) {
+        showError('monto', 'El monto es requerido');
+        isValid = false;
+    } else if (isNaN(montoNumber) || montoNumber < 500000) {
+        showError('monto', 'El monto debe ser mayor a $500.000');
+        isValid = false;
+    }
 
     const rentaRaw = document.getElementById('renta').value.trim();
-    
-
     const rentaClean = rentaRaw.replace(/\./g, '');
 
     if (!rentaClean) {

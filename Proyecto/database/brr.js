@@ -1,4 +1,4 @@
-const pool = require('./db'); // tu archivo db.js
+const pool = require('./database/db');
 
 async function showTables() {
     try {
@@ -14,7 +14,7 @@ async function showTables() {
     } catch (err) {
         console.error('Error al listar tablas:', err);
     } finally {
-        pool.end(); // cerrar conexiones
+        pool.end(); // Cerrar conexiones
     }
 }
 
