@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS prestamos (
   cuota_mensual BIGINT,
   ctc BIGINT,
   cae DECIMAL(5,2),
-  created_at TIMESTAMP DEFAULT now()
+  created_at TIMESTAMP DEFAULT now(),
   PRIMARY KEY (id, user_id)
 );
 CREATE TABLE IF NOT EXISTS documento (
