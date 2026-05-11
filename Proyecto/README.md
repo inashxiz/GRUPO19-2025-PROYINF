@@ -57,6 +57,7 @@ Para reiniciar un servicio específico:
   - docker compose restart nombre_servicio
 Para detener todos los contenedores sin eliminar volúmenes:
   - docker compose down
-
+En caso de querer realizar casos de prueba, realizar el comando:
+  - python -m unittest .\tests\test_simulation.py
 
 
