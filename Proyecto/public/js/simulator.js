@@ -5,22 +5,30 @@ function validateRUT(rut) {
     const rutBody = cleanRUT.slice(0, -1);
     const rutDigit = cleanRUT.slice(-1).toUpperCase();
 
-    var sum = 0;
-    var multiplier = 2;
-    for (var i = rutBody.length - 1; i >= 0; i--) {
-        sum += parseInt(rutBody[i]) * multiplier;
+    let sum = 0;
+    let multiplier = 2;
+    for (let i = rutBody.length - 1; i >= 0; i--) {
+        sum += Number.parseInt(rutBody[i], 10) * multiplier;
         multiplier = multiplier === 7 ? 2 : multiplier + 1;
     }
     
     const expectedDigit = 11 - (sum % 11);
-    const finalDigit = expectedDigit === 11 ? '0' : expectedDigit === 10 ? 'K' : expectedDigit.toString();
+    let finalDigit;
+    
+    if (expectedDigit === 11) {
+        finalDigit = '0';
+    } else if (expectedDigit === 10) {
+        finalDigit = 'K';
+    } else {
+        finalDigit = expectedDigit.toString();
+    }
     
     return rutDigit === finalDigit;
 }
 
 function formatNumber(value) {
     const numbers = value.replace(/\D/g, '');
-    return numbers.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return numbers ? Number.parseInt(numbers, 10).toLocaleString('es-CL') : '';
 }
 
 function formatRUT(value) {
@@ -30,7 +38,8 @@ function formatRUT(value) {
     const body = numbers.slice(0, -1);
     const digit = numbers.slice(-1);
     
-    return `${body.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}-${digit}`;
+    const formattedBody = body ? Number.parseInt(body, 10).toLocaleString('es-CL') : '';
+    return `${formattedBody}-${digit}`;
 }
 
 function showError(fieldId, message) {
@@ -50,40 +59,42 @@ function clearError(fieldId) {
 }
 
 function validateForm() {
-var isValid = true;
+    let isValid = true;
     ['rut', 'monto', 'renta', 'cuotas', 'fechaPrimerPago'].forEach(clearError);
     
     const monto = document.getElementById('monto').value;
-    const montoClean = monto.replace(/\./g, '');
-    const montoNumber = parseInt(montoClean);
+    const montoClean = monto.replaceAll('.', '');
+    const montoNumber = Number.parseInt(montoClean, 10);
+    
     if (!monto) {
         showError('monto', 'El monto es requerido');
         isValid = false;
-    } else if (isNaN(montoNumber) || montoNumber < 500000) {
+    } else if (Number.isNaN(montoNumber) || montoNumber < 500000) {
         showError('monto', 'El monto debe ser mayor a $500.000');
         isValid = false;
     }
 
     const rentaRaw = document.getElementById('renta').value.trim();
-    const rentaClean = rentaRaw.replace(/\./g, '');
+    const rentaClean = rentaRaw.replaceAll('.', '');
 
-    if (!rentaClean) {
-        showError('renta', 'La renta es requerida');
-        isValid = false;
-    } else {
-        const rentaNumber = parseFloat(rentaClean);
-        if (isNaN(rentaNumber) || rentaNumber <= 0) {
+    if (rentaClean) {
+        const rentaNumber = Number.parseFloat(rentaClean);
+        if (Number.isNaN(rentaNumber) || rentaNumber <= 0) {
             showError('renta', 'Ingresa una renta válida');
             isValid = false;
         }
+    } else {
+        showError('renta', 'La renta es requerida');
+        isValid = false;
     }
     
     const cuotas = document.getElementById('cuotas').value;
-    const cuotasNumber = parseInt(cuotas);
+    const cuotasNumber = Number.parseInt(cuotas, 10);
+    
     if (!cuotas) {
         showError('cuotas', 'Las cuotas son requeridas');
         isValid = false;
-    } else if (isNaN(cuotasNumber) || cuotasNumber < 6 || cuotasNumber > 60) {
+    } else if (Number.isNaN(cuotasNumber) || cuotasNumber < 6 || cuotasNumber > 60) {
         showError('cuotas', 'Ingresa entre 6 y 60 cuotas');
         isValid = false;
     }
@@ -93,8 +104,10 @@ var isValid = true;
         showError('fechaPrimerPago', 'La fecha es requerida');
         isValid = false;
     }
+    
     return isValid;
 }
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('creditForm');
     const rutInput = document.getElementById('rut');
@@ -102,14 +115,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const rentaInput = document.getElementById('renta');
     const fechaPrimerPago = document.getElementById('fechaPrimerPago');
 
-    if (montoInput && montoInput.value) {
+
+    if (montoInput?.value) {
         montoInput.value = formatNumber(montoInput.value);
     }
-    if (rentaInput && rentaInput.value) {
+    if (rentaInput?.value) {
         rentaInput.value = formatNumber(rentaInput.value);
     }
-    
-    if (rutInput && rutInput.value) {
+    if (rutInput?.value) {
         rutInput.value = formatRUT(rutInput.value);
     }
 
@@ -157,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (validateForm()) {
             const submitBtn = document.getElementById('submitBtn');
             
-            montoInput.value = montoInput.value.replace(/\./g, '');
-            rentaInput.value = rentaInput.value.replace(/\./g, '');
+            montoInput.value = montoInput.value.replaceAll('.', '');
+            rentaInput.value = rentaInput.value.replaceAll('.', '');
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESANDO...';
