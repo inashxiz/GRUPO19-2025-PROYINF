@@ -157,8 +157,8 @@ body {
 
 .password-container input {
     width: 100%;
-    padding-right: 2.5rem;
     padding: 0.75rem 1rem;
+    padding-right: 2.5rem;
     border-radius: 0.75rem;
     border: 1px solid #cbd5e0;
     font-size: 1rem;
