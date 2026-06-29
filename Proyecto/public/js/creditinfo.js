@@ -1,19 +1,18 @@
+function maskCurrency(e) {
+    let value = e.target.value.replace(/\D/g, "");
+    if (value === "") {
+        e.target.value = "";
+        return;
+    }
+    value = new Intl.NumberFormat('es-CL').format(value);
+    e.target.value = "$" + value;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const creditForm = document.getElementById('creditForm');
     const sueldoInput = document.getElementById('sueldo');
     const deudasInput = document.getElementById('deudas');
     const carnetInput = document.getElementById('carnet');
-
-
-    function maskCurrency(e) {
-        let value = e.target.value.replace(/\D/g, "");
-        if (value === "") {
-            e.target.value = "";
-            return;
-        }
-        value = new Intl.NumberFormat('es-CL').format(value);
-        e.target.value = "$" + value;
-    }
 
     [sueldoInput, deudasInput].forEach(input => {
         input.addEventListener('input', maskCurrency);
@@ -33,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const cotizaciones = document.getElementById('cotizaciones').files[0];
         const carnet = carnetInput.files[0];
 
-        if (!sueldoRaw || parseInt(sueldoRaw) <= 0) {
+        const sueldoNumber = Number.parseInt(sueldoRaw, 10);
+        if (!sueldoRaw || Number.isNaN(sueldoNumber) || sueldoNumber <= 0) {
             alert("El sueldo debe ser un valor positivo.");
             isValid = false;
         }
