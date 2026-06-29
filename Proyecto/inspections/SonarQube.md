@@ -2,8 +2,12 @@
 
 Este documento detalla los hallazgos de la inspección automática de código realizada con SonarCloud para el proyecto.
 
-![Reporte de issues total](Reporte_issues.png)
+## Resumen del Estado del Proyecto
+A continuación se presenta el estado general obtenido en el dashboard de SonarCloud:
+
+![Dashboard General de SonarCloud](Reporte_issues.png)
 ![Reporte de issues total por archivo](Reporte_issues_por_archivo.png)
+
 
 ---
 
