@@ -42,3 +42,15 @@ En el archivo de estilos, dentro de la clase `.password-container input`, se def
 ### Recomendación de la aplicación y resolución
 * **Recomendación:** Evitar el uso de propiedades *shorthand* (como `padding`) justo después de especificar un lado de forma individual (*longhand*), o bien reordenar las reglas correctamente.
 * **Cómo se abordará:** **Se considera para la mejora.** Se corregirá el CSS reordenando o unificando la propiedad para que el `padding-right` específico de `2.5rem` se aplique correctamente (por ejemplo, declarando el shorthand primero y luego el valor específico, o combinando todo en una sola línea de padding: `padding: 0.75rem 2.5rem 0.75rem 1rem;`).
+
+
+## Resumen del Estado del Proyecto post re-inspección
+A continuación se presenta el estado general obtenido en el dashboard de SonarCloud tras solucionar las issues en los siguientes archivos trabajados durante el semestre:
+
+Proyecto\public\css\login.css
+Proyecto notas\GRUPO19-2025-PROYINF\Proyecto\index.js
+Proyecto\public\js\creditinfo.js
+Proyecto\public\js\simulator.js
+
+![Dashboard General de SonarCloud](Reporte_issues_final.png)
+![Quality issues totales por archivo](Reporte_issues_por_archivo_final.png)
