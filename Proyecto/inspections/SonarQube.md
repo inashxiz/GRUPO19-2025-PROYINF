@@ -11,9 +11,9 @@ A continuación se presenta el estado general obtenido en el dashboard de SonarC
 
 ## 1. Primer Quality Issue: Credenciales Hardcodeadas (JavaScript)
 
-* **Archivo / Línea afectada:** L23
+* **Archivo / Línea afectada:** Proyecto\index.js / Línea 23
 * **Impacto en Calidad:** Security (Seguridad)
-* **Severidad / Tipo:** Blocker / Vulnerability (Bloqueante / Vulnerabilidad)
+* **Severidad / Tipo:** Bloqueante / Vulnerabilidad
 * **Regla SonarCloud:** `javascript:S6437` - *Credentials should not be hard-coded.*
 
 ### Descripción del problema
@@ -29,9 +29,9 @@ Se detectó una vulnerabilidad crítica debido a que la clave secreta de la sesi
 
 ## 2. Segundo Quality Issue: Propiedad CSS Sobreescrita (CSS)
 
-* **Archivo / Línea afectada:** L161
+* **Archivo / Línea afectada:** Proyecto\public\css\login.css / Línea 161
 * **Impacto en Calidad:** Reliability (Confiabilidad)
-* **Severidad / Tipo:** High / Bug (Alta / Crítico)
+* **Severidad / Tipo:** Alta / Crítico
 * **Regla SonarCloud:** `css:S4657` - *Shorthand properties that override related longhand properties should be avoided.*
 
 ### Descripción del problema
