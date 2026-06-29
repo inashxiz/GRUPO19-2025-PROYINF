@@ -43,4 +43,4 @@ En el archivo de estilos, dentro de la clase `.password-container input`, se def
 
 ### Recomendación de la aplicación y resolución
 * **Recomendación:** Evitar el uso de propiedades *shorthand* (como `padding`) justo después de especificar un lado de forma individual (*longhand*), o bien reordenar las reglas correctamente.
-* **Cómo se abordará:** **Se considera para la mejora.** Se corregirá el CSS reordenando o unificando la propiedad para que el `padding-right` específico de `2.5rem` se aplique correctamente (por ejemplo, declarando el shorthand primero y luego el valor específico, o combinando todo en una sola línea de padding: `padding: 0.75rem 2.5rem 0.75rem 1rem;`).
+* **Cómo se abordará:** **Se considera para la mejora.** Se corregirá el CSS reordenando o unificando la propiedad para que el `padding-right` específico de `2.5rem` se aplique correctamente (por ejemplo, declarando el shorthand primero y luego el valor específico,  `padding: 0.75rem 2.5rem padding:0.75rem 1rem;`).
