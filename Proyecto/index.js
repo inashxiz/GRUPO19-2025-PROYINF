@@ -63,14 +63,25 @@ function parseNumber(str){
 }
 
 
-function monthlyInterestRate(monto, cuotas){
+function monthlyInterestRate(monto, cuotas) {
   const isShortTerm = cuotas >= 6 && cuotas <= 35;
-  
-  if (monto >= 500000 && monto <= 2999999) return isShortTerm ? 0.0219 : 0.0217;
-  if (monto >= 3000000 && monto <= 6999999) return isShortTerm ? 0.0155 : 0.0153;
-  if (monto >= 7000000 && monto <= 11999999) return isShortTerm ? 0.0134 : 0.0132;
-  if (monto >= 12000000 && monto <= 22999999) return isShortTerm ? 0.0112 : 0.0110;
-  if (monto >= 23000000 && monto <= 30999999) return isShortTerm ? 0.0107 : 0.0105;
+
+  // Tabla de rangos y tasas (ordenada de menor a mayor monto)
+  const rates = [
+    { max: 2999999, short: 0.0219, long: 0.0217 },
+    { max: 6999999, short: 0.0155, long: 0.0153 },
+    { max: 11999999, short: 0.0134, long: 0.0132 },
+    { max: 22999999, short: 0.0112, long: 0.011 },
+    { max: 30999999, short: 0.0107, long: 0.0105 }
+  ];
+
+  // Encontramos el primer rango en el que el monto encaje
+  const tier = rates.find(r => monto <= r.max);
+
+  // Si encontró un rango, retorna la tasa correspondiente; si no (monto mayor a 30,999,999), retorna la tasa por defecto
+  if (tier) {
+    return isShortTerm ? tier.short : tier.long;
+  }
   
   return isShortTerm ? 0.0101 : 0.0099;
 }
